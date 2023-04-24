@@ -1,8 +1,8 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState, FC } from "react";
 import { useRecoilValue } from "recoil";
-import { usersState } from "../../../store/";
-import { Request, User } from "../../../types/";
+import { usersState } from "../../../store";
+import { Request, User } from "../../../types";
 
 type Props = {
   request: Request;
@@ -13,13 +13,13 @@ export const RecruitmentMemberList: FC<Props> = ({ request }) => {
   const users = useRecoilValue(usersState);
 
   useEffect(() => {
-    const result = users.filter((user: User) => {
+    const userList = users.filter((user: User) => {
       if (!user.uid) return;
       if (request.member.includes(user.uid)) {
         return user.name;
       }
     });
-    setUsersfilter(result);
+    setUsersfilter(userList);
   }, [request.member, users]);
 
   return (
