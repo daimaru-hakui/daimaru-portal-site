@@ -34,11 +34,9 @@ const Home: NextPage<any> = ({
   categoryData,
   newsData,
   linkData,
-  calendarData,
 }) => {
   const [user] = useAuthState(auth);
   const currentUser = useAuthStore((state) => state.currentUser);
-  const router = useRouter();
   const setUsers = useSetRecoilState<any>(usersState); //ユーザー一覧リスト
   const setClaims = useSetRecoilState<any>(claimsState); //クレーム一覧リスト
 
@@ -92,7 +90,7 @@ const Home: NextPage<any> = ({
 
   //アルコールチェックLIST取得
   useEffect(() => {
-    const unsub = onSnapshot(
+    onSnapshot(
       doc(db, "alcoholCheckList", `${todayDate()}`),
       (doc) => {
         setAlcoholObject(doc.data());

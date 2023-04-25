@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 import { Request, User } from "../types";
-export const spinnerAtom = atom({
+export const spinnerAtom = atom<boolean>({
   key: "spinnerAtom",
   default: false,
 });

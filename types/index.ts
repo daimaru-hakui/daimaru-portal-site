@@ -18,7 +18,19 @@ export type Request = {
   recruitment: boolean;
   author: string;
   endDay: string;
-};
+}
+export type RequestInputs = {
+  title: string;
+  startDay: string;
+  startTime: string;
+  endDay: string;
+  endTime: string;
+  applicant: string;
+  person: string;
+  moreless: string;
+  level: string;
+  content: string;
+  };
 
 export type User = {
   uid: string;
