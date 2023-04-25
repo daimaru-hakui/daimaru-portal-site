@@ -4,11 +4,10 @@ import React, { useEffect, useState } from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
-import { auth, db, storage } from "../../../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { db, storage } from "../../../firebase";
 import { useRouter } from "next/router";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { claimsState, usersState } from "../../../store";
+import { useRecoilState } from "recoil";
+import { claimsState } from "../../../store";
 import { taskflow } from "../../../data";
 import { todayDate } from "../../../functions";
 
@@ -30,9 +29,8 @@ import { useAuthStore } from "../../../store/useAuthStore";
 const ClaimId = () => {
   const router = useRouter();
   const queryId = router.query.id;
-  const [user] = useAuthState(auth);
   const currentUser = useAuthStore((state) => state.currentUser);
-  const users = useRecoilValue<any>(usersState); //ユーザー一覧リスト
+  const users = useAuthStore((state) => state.users);
   const [claim, setClaim] = useState<any>([]); //クレームの個別記事を取得
   const [claims, setClaims] = useRecoilState<any>(claimsState); //クレーム一覧を取得
   const [selectUser, setSelectUser] = useState(""); //送信先選択

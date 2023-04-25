@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import useSWR from "swr";
-import { CuttingReportType } from "../../../types/CuttingReportType";
+import { CuttingReport } from "../../../types";
 import { useCuttingReport } from "../../hooks/useCuttingReport";
 import CuttingReportModal from "../cutting-report/CuttingReportModal";
 
@@ -52,7 +52,7 @@ const CuttingReportArea = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {reports?.contents.map((report: CuttingReportType) => (
+                {reports?.contents.map((report: CuttingReport) => (
                   <Tr key={report.id}>
                     <Td>
                       <CuttingReportModal report={report} />

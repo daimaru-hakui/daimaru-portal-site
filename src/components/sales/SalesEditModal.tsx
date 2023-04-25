@@ -13,145 +13,110 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import React, { FC } from "react";
 import { db } from "../../../firebase";
+import { Sale } from "../../../types";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { FaEdit } from "react-icons/fa";
 
 type Props = {
-  docId: string;
+  sale: Sale;
 };
 
-const SalesEditModal: NextPage<Props> = ({ docId }) => {
-  const router = useRouter();
+type Inputs = {
+  currentTarget: number;
+  currentAchieve: number;
+  currentExpect: number;
+};
+
+export const SalesEditModal: FC<Props> = ({ sale }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [salesObj, setSalesObj] = useState<any>();
-  const [calcObj, setCalcObj] = useState<any>();
-
-  // salesデータを取得
-  useEffect(() => {
-    const getSale = async () => {
-      const docRef = doc(db, "sales", `${docId}`);
-      const docSnap = await getDoc(docRef);
-      setSalesObj({
-        ...docSnap.data(),
-        id: docSnap.id,
-      });
-    };
-    getSale();
-  }, [docId]);
-
-  // リセット
-  const reset = async () => {
-    const getSale = async () => {
-      const docRef = doc(db, "sales", `${docId}`);
-      const docSnap = await getDoc(docRef);
-      setSalesObj({
-        ...docSnap.data(),
-        id: docSnap.id,
-      });
-    };
-    getSale();
+  const { register, handleSubmit, reset } = useForm<Inputs>({
+    defaultValues: {
+      currentTarget: Number(sale?.currentTarget),
+      currentAchieve: Number(sale?.currentAchieve),
+      currentExpect: Number(sale?.currentExpect),
+    },
+  });
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    updateSales(data, sale?.id);
+    onClose();
   };
-
   // 売上データ更新
-  const updateSales = async () => {
+  const updateSales = async (data: Inputs, docId: string) => {
     const docRef = doc(db, "sales", `${docId}`);
     try {
       await updateDoc(docRef, {
-        currentTarget: salesObj.currentTarget,
-        currentAchieve: salesObj.currentAchieve,
-        currentExpect: salesObj.currentExpect,
+        currentTarget: Number(data?.currentTarget),
+        currentAchieve: Number(data?.currentAchieve),
+        currentExpect: Number(data?.currentExpect),
         updatedAt: serverTimestamp(),
       });
     } catch (err) {
       console.log(err);
-    } finally {
-      router.push("/sales/");
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    setSalesObj({ ...salesObj, [name]: value });
   };
 
   return (
     <>
-      <Button size="xs" onClick={onOpen}>
-        編集
-      </Button>
+      <FaEdit cursor="pointer" onClick={onOpen} />
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>編集</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Box fontSize="xs" textAlign="right">
-              単位：万円
-            </Box>
-            <Stack spacing={6}>
-              <Box>
-                <Text>■ 予算</Text>
-                <Input
-                  mt={2}
-                  placeholder="予算を入力してください"
-                  name="currentTarget"
-                  value={salesObj?.currentTarget}
-                  onChange={handleInputChange}
-                />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalContent>
+            <ModalHeader>編集</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Box fontSize="xs" textAlign="right">
+                単位：万円
               </Box>
-              <Box>
-                <Text>■ 実績</Text>
-                <Input
-                  mt={2}
-                  placeholder="実績を入力してください"
-                  name="currentAchieve"
-                  value={salesObj?.currentAchieve}
-                  onChange={handleInputChange}
-                />
-              </Box>
-              <Box>
-                <Text>■ 計上予定</Text>
-                <Input
-                  mt={2}
-                  placeholder="計上予定を入力してください"
-                  name="currentExpect"
-                  value={salesObj?.currentExpect}
-                  onChange={handleInputChange}
-                />
-              </Box>
-            </Stack>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              mr={3}
-              variant="ghost"
-              onClick={() => {
-                onClose();
-                reset();
-              }}
-            >
-              Close
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={() => {
-                updateSales();
-                onClose();
-              }}
-            >
-              OK
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+              <Stack spacing={6}>
+                <Box>
+                  <Text>■ 予算</Text>
+                  <Input
+                    mt={2}
+                    placeholder="予算を入力してください"
+                    {...register("currentTarget")}
+                  />
+                </Box>
+                <Box>
+                  <Text>■ 実績</Text>
+                  <Input
+                    mt={2}
+                    placeholder="実績を入力してください"
+                    {...register("currentAchieve")}
+                  />
+                </Box>
+                <Box>
+                  <Text>■ 計上予定</Text>
+                  <Input
+                    mt={2}
+                    placeholder="計上予定を入力してください"
+                    {...register("currentExpect")}
+                  />
+                </Box>
+              </Stack>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                mr={3}
+                variant="ghost"
+                onClick={() => {
+                  onClose();
+                  reset();
+                }}
+              >
+                閉じる
+              </Button>
+              <Button colorScheme="blue" type="submit">
+                更新
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
       </Modal>
     </>
   );
 };
-
-export default SalesEditModal;

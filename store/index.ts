@@ -1,27 +1,7 @@
 import { atom } from "recoil";
-import { Request, User } from "../types";
-export const spinnerAtom = atom<boolean>({
-  key: "spinnerAtom",
-  default: false,
-});
 
 export const claimsState = atom({
   key: "claimsState",
-  default: [],
-});
-
-export const usersState = atom<User[]>({
-  key: "usersState",
-  default: [],
-});
-
-export const requestsState = atom<Request[]>({
-  key: "requestsState",
-  default: [],
-});
-
-export const hideRequestsState = atom({
-  key: "hideRequestsState",
   default: [],
 });
 

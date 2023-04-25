@@ -12,7 +12,6 @@ import Link from "next/link";
 import React, { FC } from "react";
 import { useRecoilValue } from "recoil";
 import { auth } from "../../firebase";
-import { usersState } from "../../store";
 import { Administrator } from "../../data";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -20,7 +19,7 @@ import { User } from "../../types";
 
 export const HeaderMenuButton: FC = () => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const users = useRecoilValue(usersState); //ユーザー一覧リスト
+  const users = useAuthStore((state) => state.users);
 
   //アルコールチェック権限
   const userAlcoholAuthority = (userId: string) => {

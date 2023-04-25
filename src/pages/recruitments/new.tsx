@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import { db } from "../../../firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { RecruitmentPostList } from "@/components/recruitments/RecruitmentPostList";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Request } from "../../../types";
@@ -23,34 +29,29 @@ const RecruitmentNew = () => {
     level: "",
     content: "",
   };
-  const [currentRequests, setCurrentRequests] = useState<Request[]>([]);
 
-  //管理者用投稿リストを取得
+  //自分の投稿リストを取得
   useEffect(() => {
     const requestsRef = collection(db, "requestList");
-    const q = query(requestsRef, orderBy("sendAt", "desc"));
+    const q = query(
+      requestsRef,
+      where("author", "==", currentUser),
+      orderBy("createdAt", "desc")
+    );
     const unsub = onSnapshot(q, (querySnapshot) => {
       setRequests(
         querySnapshot.docs.map(
           (doc) =>
-          ({
-            ...doc.data(),
-            id: doc.id,
-          } as Request)
+            ({
+              ...doc.data(),
+              id: doc.id,
+            } as Request)
         )
       );
     });
     return unsub;
-  }, []);
-
-  //作成者用投稿リストを取得
-  useEffect(() => {
-    setCurrentRequests(
-      requests.filter(
-        (request: { author: string; }) => request.author === currentUser
-      )
-    );
-  }, [currentUser, requests]);
+  }, [currentUser]);
+  console.log(requests);
 
   return (
     <Flex flexDirection="column" alignItems="center">
@@ -74,7 +75,7 @@ const RecruitmentNew = () => {
         bg="white"
         rounded="md"
       >
-        <RecruitmentPostList requests={currentRequests} />
+        <RecruitmentPostList requests={requests} />
       </Box>
     </Flex>
   );

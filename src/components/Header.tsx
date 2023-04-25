@@ -11,8 +11,8 @@ export const Header: FC = () => {
     <>
       {currentUser && (
         <Flex
-          width="100%"
-          height="60px"
+          w="100%"
+          h="60px"
           px={6}
           justifyContent="space-between"
           alignItems="center"
@@ -22,9 +22,9 @@ export const Header: FC = () => {
           top={0}
           zIndex={100}
         >
-          <Flex alignItems={"center"}>
+          <Flex alignItems="center">
             <Link href="/">
-              <Text fontSize={{ base: "large" }} fontWeight={"bold"}>
+              <Text fontSize="large" fontWeight="bold">
                 社内用ポータルサイト
               </Text>
             </Link>

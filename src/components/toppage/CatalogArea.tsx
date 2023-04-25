@@ -35,7 +35,7 @@ const CatalogArea = () => {
   return (
     <>
       <Flex
-        width="100%"
+        w="100%"
         boxShadow="xs"
         p={{ base: 0, sm: 3 }}
         rounded="md"
@@ -53,12 +53,12 @@ const CatalogArea = () => {
           ))}
         </Flex>
         <Flex
+          w="full"
           flex="1"
           color="white"
           flexDirection="column"
           justifyContent="space-between"
           p={3}
-          w="100%"
         >
           {linkItems.map((item) => (
             <Box h="30%" key={item.title}>

@@ -1,10 +1,11 @@
-import { Box, Button, Flex, Select, Text } from '@chakra-ui/react';
-import { NextPage } from 'next';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, Flex, Select, Text } from "@chakra-ui/react";
+import { NextPage } from "next";
+import React, { useEffect, useState } from "react";
+import { User } from "../../../../types";
 
 type Props = {
   queryId: string | string[] | undefined;
-  users: [];
+  users: User[];
   selectUser: string;
   setSelectUser: any;
   selectTask: number;
@@ -58,19 +59,19 @@ const ClaimSelectSendButton: NextPage<Props> = ({
   return (
     <>
       <Box mt={12}>
-        <Text w='100%' mx='auto' textAlign='center'>
+        <Text w="100%" mx="auto" textAlign="center">
           タスクと送信先を選択して送信してください。
         </Text>
         <Flex
-          flexDirection={{ base: 'column', md: 'row' }}
-          justifyContent={'center'}
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent={"center"}
           mt={2}
         >
           <Flex mt={2}>
             <Select
               value={selectTask}
               onChange={(e) => setSelectTask(e.target.value)}
-              placeholder='タスクを選択'
+              placeholder="タスクを選択"
               w={48}
               mr={2}
             >
@@ -88,7 +89,7 @@ const ClaimSelectSendButton: NextPage<Props> = ({
             <Select
               value={selectUser}
               onChange={(e) => setSelectUser(e.target.value)}
-              placeholder='送信先を選択'
+              placeholder="送信先を選択"
               w={48}
               mr={2}
             >

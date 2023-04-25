@@ -66,8 +66,8 @@ const Login: NextPage = () => {
                   <InputLeftElement pointerEvents="none" />
                   <Input
                     type="email"
-                    placeholder="email address"
                     p="3"
+                    placeholder="email address"
                     {...register("email", { required: true })}
                   />
                   {errors.email && (
@@ -80,8 +80,8 @@ const Login: NextPage = () => {
                   <InputLeftElement pointerEvents="none" color="gray.300" />
                   <Input
                     type={"password"}
-                    placeholder="Password"
                     p="3"
+                    placeholder="Password"
                     {...register("password", { required: true })}
                   />
                   {errors.password && (

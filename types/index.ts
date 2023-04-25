@@ -18,7 +18,7 @@ export type Request = {
   recruitment: boolean;
   author: string;
   endDay: string;
-}
+};
 export type RequestInputs = {
   title: string;
   startDay: string;
@@ -30,16 +30,74 @@ export type RequestInputs = {
   moreless: string;
   level: string;
   content: string;
-  };
+};
 
 export type User = {
+  id: string;
   uid: string;
   name: string;
   rank: number;
+  email: string;
   isoSalesStaff: boolean;
   isoBoss: boolean;
   isoManager: boolean;
   isoOffice: boolean;
   isoTopManegment: boolean;
   alcoholChecker: boolean;
+};
+
+export type Sale = {
+  id: string;
+  currentUser: string;
+  currentExpect: number;
+  currentAchieve: number;
+  currentTarget: number;
+  updatedAt: any;
+  rank: number;
+};
+
+export type MakerWeb = {
+  id: string;
+  name: string;
+  url: string;
+  userId: string;
+  password: string;
+  code: string;
+};
+
+export type AlcoholCheckList = {
+  id: string;
+  member: string[];
+};
+
+export type AlcoholCheckData = {
+  id: string;
+  uid: string;
+  alcoholCheck1: number;
+  alcoholCheck2: number;
+  date: string;
+  createdAt: any;
+};
+
+export type ProgressType = {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  contents: { title: string; result: boolean }[];
+};
+
+export type CuttingReport = {
+  id: string;
+  staff: string;
+  processNumber: string;
+  cuttingDate: string;
+  itemName: string;
+  itemType: string;
+  client: string;
+  totalQuantity: number;
+  comment: string;
+  products: { category: string; productId: string; quantity: number }[];
+  serialNumber: number;
+  username: string;
 };

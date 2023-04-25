@@ -4,7 +4,6 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Heading,
   Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
@@ -16,25 +15,35 @@ import {
 } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { db } from "../../../firebase";
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useUtils } from "@/hooks/useUtils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Request, RequestInputs } from "../../../types";
-import { spinnerAtom } from "../../../store";
-import { useSetRecoilState } from "recoil";
+import { useLoadingStore } from "../../../store/useLoadingStore";
 
 type Props = {
   requestInputs: RequestInputs;
-  pageType: 'new' | 'edit';
+  pageType: "new" | "edit";
   requestId?: string;
   onClose?: () => void;
 };
 
-export const RecruitmentForm: FC<Props> = ({ requestId, requestInputs, pageType, onClose }) => {
+export const RecruitmentForm: FC<Props> = ({
+  requestId,
+  requestInputs,
+  pageType,
+  onClose,
+}) => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const setSpinner = useSetRecoilState<boolean>(spinnerAtom); //ユーザー一覧リスト
+  const setIsLoading = useLoadingStore((state) => state.setIsLoading);
   const { dateTime } = useUtils();
   const router = useRouter();
 
@@ -63,7 +72,7 @@ export const RecruitmentForm: FC<Props> = ({ requestId, requestInputs, pageType,
   };
 
   const addRequest = async (data: Request) => {
-    setSpinner(true);
+    setIsLoading(true);
     try {
       await addDoc(collection(db, "requestList"), {
         title: data.title,
@@ -80,6 +89,7 @@ export const RecruitmentForm: FC<Props> = ({ requestId, requestInputs, pageType,
         display: true,
         editAt: false,
         sendAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
         author: currentUser,
         recruitment: true,
       });
@@ -88,15 +98,14 @@ export const RecruitmentForm: FC<Props> = ({ requestId, requestInputs, pageType,
     } catch (e) {
       console.error("Error adding document: ", e);
     } finally {
-      setSpinner(false);
+      setIsLoading(false);
     }
   };
 
   //編集を確定する
   const updateRequest = async (data: RequestInputs) => {
-    setSpinner(true);
+    setIsLoading(true);
     try {
-
       const docRef = doc(db, "requestList", `${requestId}`);
       await updateDoc(docRef, {
         title: data?.title,
@@ -109,11 +118,12 @@ export const RecruitmentForm: FC<Props> = ({ requestId, requestInputs, pageType,
         moreless: data?.moreless,
         level: data?.level,
         content: data?.content,
+        updatedAt: serverTimestamp(),
       });
     } catch (e) {
       console.log(e);
     } finally {
-      setSpinner(false);
+      setIsLoading(false);
     }
   };
 

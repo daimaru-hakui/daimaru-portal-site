@@ -6,11 +6,13 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
-import { NextPage } from "next";
-import React from "react";
+import { GetStaticProps, NextPage } from "next";
 
 type Props = {
-  calendarData: any;
+  calendarData: {
+    imageHonsha: { url: string };
+    imageTokushima: { url: string };
+  };
 };
 
 const Calendar: NextPage<Props> = ({ calendarData }) => {
@@ -45,7 +47,7 @@ const Calendar: NextPage<Props> = ({ calendarData }) => {
 
 export default Calendar;
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const accessPoint = "https://portal-sub.microcms.io/api/v1";
   const options = {
     headers: {
@@ -61,4 +63,4 @@ export async function getStaticProps() {
       calendarData,
     },
   };
-}
+};

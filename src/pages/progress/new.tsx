@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../../../../firebase";
+import { db } from "../../../firebase";
 import { Box, Button, Container } from "@chakra-ui/react";
-import ProgressInpuArea from "../../../components/progress/ProgressInpuArea";
+import ProgressInpuArea from "../../components/progress/ProgressInpuArea";
 
 const ProgressNew = () => {
   const router = useRouter();

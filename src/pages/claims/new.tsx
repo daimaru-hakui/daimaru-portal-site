@@ -9,21 +9,21 @@ import {
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { db, storage } from "../../../../firebase";
-import { usersState } from "../../../../store";
-import ClaimInputCustomer from "../../../components/claims/new/ClaimInputCustomer";
-import ClaimInputOccurrence from "../../../components/claims/new/ClaimInputOccurrence";
+import { db, storage } from "../../../firebase";
+import ClaimInputCustomer from "../../components/claims/new/ClaimInputCustomer";
+import ClaimInputOccurrence from "../../components/claims/new/ClaimInputOccurrence";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import ClaimInputAttached from "../../../components/claims/new/ClaimInputAttached";
-import { useAuthStore } from "../../../../store/useAuthStore";
+import ClaimInputAttached from "../../components/claims/new/ClaimInputAttached";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { User } from "../../../types";
 
 //クレーム報告書作成
 
 const ClaimNew = () => {
   const router = useRouter();
   const currentUser = useAuthStore((state) => state.currentUser);
-  const users = useRecoilValue<any>(usersState); //ユーザー一覧リスト
-  const [filterUsers, setFilterUsers] = useState([]); //絞り込んだユーザー一覧リスト
+  const users = useAuthStore((state) => state.users);
+  const [filterUsers, setFilterUsers] = useState<User[]>([]); //絞り込んだユーザー一覧リスト
   const [customer, setCustomer] = useState(""); //顧客名
   const [occurrenceDate, setOccurrenceDate] = useState(""); //発生日
   const [occurrenceSelect, setOccurrenceSelect] = useState(""); //発生選択
@@ -111,7 +111,7 @@ const ClaimNew = () => {
 
   //ユーザーリストを取得
   useEffect(() => {
-    const newUsers = users.filter((user: { isoSalesStaff: boolean }) => {
+    const newUsers = users.filter((user: User) => {
       if (user.isoSalesStaff === true) return user;
     });
     setFilterUsers(newUsers);

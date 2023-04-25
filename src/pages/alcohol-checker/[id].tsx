@@ -10,19 +10,22 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
+import { AlcoholCheckData } from "../../../types";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { useDisp } from "@/hooks/useDisp";
 
 const AlcoholId = () => {
-  const [posts, setPosts] = useState<any>([]);
-  const [users, setUsers] = useState<any>([]);
-  const [list, setList] = useState<any>([]);
-  const [notUsers, setNotUsers] = useState<any>([]);
+  const users = useAuthStore((state) => state.users);
+  const [notUsers, setNotUsers] = useState<string[]>([]);
+  const [posts, setPosts] = useState<AlcoholCheckData[]>([]);
   const router = useRouter();
   const queryId = router.query.id;
+  const { getUserName } = useDisp();
 
   //アルコールチェックデータを取得
   useEffect(() => {
@@ -30,54 +33,31 @@ const AlcoholId = () => {
     const q = query(collectionRef, where("date", "==", `${queryId}`));
     getDocs(q).then((querySnapshot) => {
       setPosts(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
+        querySnapshot.docs.map(
+          (doc) =>
+            ({
+              ...doc.data(),
+              id: doc.id,
+            } as AlcoholCheckData)
+        )
       );
     });
   }, [queryId]);
 
-  //user一覧取得
-  useEffect(() => {
-    const usersRef = collection(db, "authority");
-    const q = query(usersRef, orderBy("rank", "asc"));
-    getDocs(q).then((querySnapshot) => {
-      setUsers(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
-      );
-    });
-  }, []);
-
   //未入力者一覧
   useEffect(() => {
-    let newUsers = users.map((user: { uid: string }) => {
-      return user.uid;
-    });
-    let newPosts = posts.map((post: { uid: string }) => {
+    const newPosts = posts.map((post) => {
       return post.uid;
     });
-    newUsers = newUsers.filter((user: string) => {
-      if (!newPosts?.includes(user)) return user;
-    });
+    const newUsers = users
+      .map((user) => {
+        return user.uid;
+      })
+      .filter((user) => {
+        if (!newPosts?.includes(user)) return user;
+      });
     setNotUsers(newUsers);
   }, [users, posts]);
-
-  //アルコールチェックリスト
-  useEffect(() => {
-    const collectionRef = collection(db, "alcoholCheckList");
-    getDocs(collectionRef).then((querySnapshot) => {
-      setList(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
-      );
-    });
-  }, []);
 
   return (
     <Flex flexDirection={"column"} alignItems={"center"}>
@@ -85,7 +65,6 @@ const AlcoholId = () => {
         <Link href="/alcohol-checker">
           <Button w="100%">一覧へ戻る</Button>
         </Link>
-
         <Flex justifyContent="space-between" mt={6}>
           <Box fontSize="lg">{queryId}</Box>
         </Flex>
@@ -96,41 +75,20 @@ const AlcoholId = () => {
               <Th minW="50px">アルコールの検査</Th>
               <Th minW="50px">酒気帯び</Th>
               <Th minW="150px">提出時刻</Th>
-              <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
-            {posts?.map(
-              (data: {
-                id: string;
-                uid: string;
-                alcoholCheck1: string;
-                alcoholCheck2: string;
-                createdAt: any;
-              }) => (
-                <Tr key={data.id}>
-                  <Td>
-                    {users.map(
-                      (user: { uid: string; name: string }) =>
-                        user.uid === data.uid && user.name
-                    )}
-                  </Td>
-                  <Td>{Number(data.alcoholCheck1) === 1 ? "済み" : "未"}</Td>
-                  <Td>{Number(data.alcoholCheck2) === 1 ? "なし" : "あり"}</Td>
-                  <Td>
-                    {data?.createdAt?.toDate().toLocaleTimeString("en-US")}
-                  </Td>
-                </Tr>
-              )
-            )}
-            {notUsers.map((notUser: string) => (
+            {posts?.map((post) => (
+              <Tr key={post.id}>
+                <Td>{getUserName(post.uid)}</Td>
+                <Td>{Number(post.alcoholCheck1) === 1 ? "済み" : "未"}</Td>
+                <Td>{Number(post.alcoholCheck2) === 1 ? "なし" : "あり"}</Td>
+                <Td>{post?.createdAt?.toDate().toLocaleTimeString("en-US")}</Td>
+              </Tr>
+            ))}
+            {notUsers.map((notUser) => (
               <Tr key={notUser}>
-                <Td>
-                  {users.map(
-                    (user: { uid: string; name: string }) =>
-                      user.uid === notUser && user.name
-                  )}
-                </Td>
+                <Td>{getUserName(notUser)}</Td>
                 <Td textAlign="center"></Td>
                 <Td textAlign="center"></Td>
                 <Td textAlign="center"></Td>

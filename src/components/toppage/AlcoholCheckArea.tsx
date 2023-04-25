@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Button,
@@ -25,16 +26,18 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { db } from "../../../firebase";
-import { todayDate } from "../../../functions";
+import { useUtils } from "../../hooks/useUtils";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { AlcoholCheckList } from "../../../types";
 
-const CheckDrawer = () => {
+export const AlcoholCheckArea: FC = () => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const [alcoholList, setAlcoholList] = useState<any>([]);
+  const [alcoholList, setAlcoholList] = useState<AlcoholCheckList>();
   const [alcoholCheck1, setAlcoholCheck1] = useState("1");
   const [alcoholCheck2, setAlcoholCheck2] = useState("1");
+  const { todayDate } = useUtils();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   //アルコールチェック登録
@@ -52,7 +55,7 @@ const CheckDrawer = () => {
           member: arrayUnion(currentUser),
         });
       }
-      const docDataRef = await addDoc(collection(db, "alcoholCheckData"), {
+      await addDoc(collection(db, "alcoholCheckData"), {
         date: `${todayDate()}`,
         uid: currentUser,
         createdAt: serverTimestamp(),
@@ -66,18 +69,14 @@ const CheckDrawer = () => {
 
   useEffect(() => {
     const docRef = doc(db, "alcoholCheckList", `${todayDate()}`);
-    const unsub = onSnapshot(docRef, (querySnapshot) => {
-      setAlcoholList(querySnapshot.data());
+    onSnapshot(docRef, (querySnapshot) => {
+      setAlcoholList({ ...querySnapshot.data() } as AlcoholCheckList);
     });
   }, []);
 
   return (
     <>
-      {alcoholList &&
-      alcoholList.member &&
-      alcoholList.member.includes(currentUser) ? (
-        ""
-      ) : (
+      {!alcoholList?.member.includes(currentUser || "") && (
         <>
           <Flex
             alignItems="center"
@@ -97,7 +96,6 @@ const CheckDrawer = () => {
           </Flex>
         </>
       )}
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -142,7 +140,6 @@ const CheckDrawer = () => {
               </Box>
             </>
           </ModalBody>
-
           <ModalFooter>
             <Button
               width="100px"
@@ -160,5 +157,3 @@ const CheckDrawer = () => {
     </>
   );
 };
-
-export default CheckDrawer;

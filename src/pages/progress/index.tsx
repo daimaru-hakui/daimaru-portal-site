@@ -20,7 +20,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { Administrator } from "../../../data";
-import { ProgressType } from "../../../types/progressTypes";
+import { ProgressType } from "../../../types";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 const ProgressIndex = () => {

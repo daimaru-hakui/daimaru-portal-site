@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { db } from "../../../../firebase";
 import { todayDate } from "../../../../functions";
-import { usersState } from "../../../../store";
+import { useAuthStore } from "../../../../store/useAuthStore";
 
 type Props = {
   claim: {
@@ -51,7 +51,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
   enabledTopManegment,
 }) => {
   const router = useRouter();
-  const users = useRecoilValue(usersState);
+  const users = useAuthStore((state) => state.users);
   const [message, setMessage] = useState("");
   const [display, setDisplay] = useState(true);
 

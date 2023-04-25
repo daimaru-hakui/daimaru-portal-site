@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, keyframes } from "@chakra-ui/react";
 import {
   collection,
   endAt,
@@ -11,12 +11,19 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { db } from "../../../firebase";
-import { claimsState, usersState } from "../../../store";
+import { claimsState } from "../../../store";
 import { useAuthStore } from "../../../store/useAuthStore";
 
-const ClaimArea = () => {
+const animationKeyframes = keyframes`
+0% { background-color: red; }
+50% { background-color: white; }
+100% { background-color: red;  }
+`;
+const animation = `${animationKeyframes} 2s ease-in-out infinite`;
+
+export const ClaimArea = () => {
   const claims = useRecoilValue(claimsState);
-  const users = useRecoilValue(usersState);
+  const users = useAuthStore((state) => state.users);
   const currentUser = useAuthStore((state) => state.currentUser);
   const [claimCount, setClaimCount] = useState(0);
   const [isoOfficeUsers, setIsoOfficeUsers] = useState<any>([]);
@@ -100,18 +107,6 @@ const ClaimArea = () => {
     return newUsers;
   };
 
-  // 点滅
-  // let label: any = document.getElementById("classLabel");
-  // label?.animate(
-  //   {
-  //     background: ["white", "#ffce00"],
-  //   },
-  //   {
-  //     iterations: Infinity,
-  //     duration: 1000,
-  //   }
-  // );
-
   return (
     <>
       {myClaimCount() && (
@@ -142,10 +137,7 @@ const ClaimArea = () => {
                   fontWeight="bold"
                   rounded="md"
                   textDecoration="underline"
-                  id="classLabel"
-                  _hover={{
-                    textDecoration: "none",
-                  }}
+                  animation={animation}
                 >
                   クレーム報告書一覧
                 </Text>
@@ -199,5 +191,3 @@ const ClaimArea = () => {
     </>
   );
 };
-
-export default ClaimArea;

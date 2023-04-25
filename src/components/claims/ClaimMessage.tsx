@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Box, Flex } from "@chakra-ui/react";
 import { NextPage } from "next";
 import React from "react";
+import { User } from "../../../types";
 
 type Props = {
   claim: {
@@ -11,7 +12,7 @@ type Props = {
     amendmentContent: string;
   };
   currentUser: string | undefined;
-  users: [];
+  users: User[];
   enabledOffice: any;
   enabledManager: any;
   enabledTopManegment: any;

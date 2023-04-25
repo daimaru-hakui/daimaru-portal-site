@@ -1,14 +1,12 @@
-import React, { useState, FC } from "react";
+import React, { FC } from "react";
 import { Badge, Box, Divider, Flex, Heading, Text } from "@chakra-ui/react";
-import { useRecoilValue } from "recoil";
 import { Administrator } from "../../../data";
 import { dayOfWeek, starLevel } from "../../../functions";
-import { usersState } from "../../../store";
 import { RecruitmentRegisterButton } from "./RecruitmentRegisterButton";
 import { RecruitmentMemberList } from "./RecruitmentMemberList";
 import { RecruitmentMenu } from "./RecruitmentMenu";
 import { useAuthStore } from "../../../store/useAuthStore";
-import { Request, User } from "../../../types";
+import { Request } from "../../../types";
 
 type Props = {
   request: Request;
@@ -16,14 +14,12 @@ type Props = {
 
 export const RecruitmentPost: FC<Props> = ({ request }) => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const users = useRecoilValue(usersState);
+  const users = useAuthStore((state) => state.users);
 
   // 作成者を表示;
   const getAuthor = (authorId: string) => {
-    const usersfilter: User | undefined = users.find(
-      (user: User) => user.uid === authorId
-    );
-    return usersfilter?.name || '';
+    const usersfilter = users.find((user) => user.uid === authorId);
+    return usersfilter?.name || "";
   };
 
   // newラベルを表示(期限三日)
@@ -49,11 +45,12 @@ export const RecruitmentPost: FC<Props> = ({ request }) => {
             {/* メニューボタン  投稿者と管理者のみ表示*/}
             {(currentUser === request.author ||
               Administrator.includes(currentUser || "")) && (
-                <RecruitmentMenu request={request} />
-              )}
+              <RecruitmentMenu request={request} />
+            )}
           </Flex>
           <Heading fontSize="xl" pb={6} mt={2}>
-            {!request.display && "【募集終了】"}{request.title}
+            {!request.display && "【募集終了】"}
+            {request.title}
           </Heading>
           <Flex
             flexDirection={{

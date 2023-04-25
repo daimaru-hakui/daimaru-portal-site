@@ -10,18 +10,12 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import Link from "next/link";
+import { MakerWeb } from "../../../types";
 
 type Props = {
-  posts: {
-    id: string;
-    name: string;
-    url: string;
-    userId: string;
-    password: string;
-    code: string;
-  }[];
+  posts: MakerWeb[];
 };
 
 const MakerWeb: NextPage<Props> = ({ posts }) => {
@@ -70,7 +64,7 @@ const MakerWeb: NextPage<Props> = ({ posts }) => {
 
 export default MakerWeb;
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const params = {
     headers: {
       "X-MICROCMS-API-KEY": "5cb4353cc17045be9dc39f4dd1cac7ff7fc9",
@@ -86,4 +80,4 @@ export async function getStaticProps() {
 
   // Pass post data to the page via props
   return { props: { posts } };
-}
+};
