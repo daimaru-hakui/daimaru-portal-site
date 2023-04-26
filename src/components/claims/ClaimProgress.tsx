@@ -1,10 +1,13 @@
 import { Flex } from "@chakra-ui/react";
-import { NextPage } from "next";
-import React from "react";
+import React, { FC } from "react";
 import { taskflow } from "../../../data";
-import { ClaimProps } from "../../../types/ClaimProps";
+import { Claim } from "../../../types";
 
-const ClaimProgress: NextPage<ClaimProps> = ({ claim }) => {
+type Props = {
+  claim: Claim;
+};
+
+export const ClaimProgress: FC<Props> = ({ claim }) => {
   return (
     <Flex
       w={{ base: "100%", md: "750px" }}
@@ -15,19 +18,19 @@ const ClaimProgress: NextPage<ClaimProps> = ({ claim }) => {
       {taskflow.map((task, index) => (
         <Flex
           key={task.id}
-          justifyContent="center"
-          alignItems="center"
+          w="full"
           py={3}
           px={1}
-          w={"100%"}
+          justifyContent="center"
+          alignItems="center"
+          color="white"
+          fontSize="xs"
           borderLeft="1px"
           borderLeftRadius={index === 0 ? 6 : 0}
           borderRightRadius={index === taskflow.length - 1 ? 6 : 0}
           backgroundColor={
             task.id === Number(claim.status) ? "#ffc107" : "gray"
           }
-          color="white"
-          fontSize="xs"
         >
           {task.status}
         </Flex>
@@ -35,5 +38,3 @@ const ClaimProgress: NextPage<ClaimProps> = ({ claim }) => {
     </Flex>
   );
 };
-
-export default ClaimProgress;

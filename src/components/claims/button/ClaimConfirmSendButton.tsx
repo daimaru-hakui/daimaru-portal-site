@@ -152,7 +152,8 @@ export const ClaimConfirmSendButton: NextPage<Props> = ({ claim }) => {
       {Number(claim.status) === 1 &&
         (isOperator(currentUser, claim) ||
           isStampStaff(currentUser, claim) ||
-          isAuth(["isoOffice"])) && (
+          isAuth(["isoOffice"]))
+        && (
           <Flex justifyContent="center">
             <Button
               mt={12}

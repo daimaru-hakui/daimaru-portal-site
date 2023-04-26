@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Select } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
-import { Claim, User } from "../../../../types";
+import React, { FC } from "react";
+import { Claim } from "../../../../types";
 import { useAuthStore } from "../../../../store/useAuthStore";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { taskflow } from "../../../../data";
@@ -20,10 +20,6 @@ type Inputs = {
 export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
   const users = useAuthStore((state) => state.users);
   const router = useRouter();
-  const [isoManagerUsers, setIsoManagereUsers] = useState<User[]>([]);
-  const [isoBossUsers, setIsoBossUsers] = useState<User[]>([]);
-  const [isoTopManegmentUsers, setIsoTopManegmentUsers] = useState<User[]>([]);
-  const [isoOfficeUsers, setIsoOfficeUsers] = useState<User[]>([]);
   const {
     register,
     handleSubmit,
@@ -31,45 +27,36 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    switchStatus(data, claim.id);
+    updateClaimStatus(data, claim);
   };
 
-  useEffect(() => {
-    //ISOマネージャーのリスト
-    setIsoManagereUsers(
-      users.filter((user) => {
-        return user.isoManager === true;
-      })
-    );
-    //ISO 上司のリスト
-    setIsoBossUsers(
-      users.filter((user) => {
-        return user.isoBoss === true;
-      })
-    );
-    //ISO トップマネジメントのリスト
-    setIsoTopManegmentUsers(
-      users.filter((user) => {
-        return user.isoTopManegment === true;
-      })
-    );
-    //ISO 事務局のリスト
-    setIsoOfficeUsers(
-      users.filter((user) => {
-        return user.isoOffice === true;
-      })
-    );
-  }, [users]);
-
   //クレーム報告書のステータスを変更
-  const switchStatus = async (data: Inputs, id: string) => {
-    const docRef = doc(db, "claimList", id);
+  const updateClaimStatus = async (data: Inputs, claim: Claim) => {
+    const docRef = doc(db, "claimList", claim.id);
     await updateDoc(docRef, {
       status: Number(data.selectTask),
       operator: data.selectUser,
     });
     router.push("/claims");
   };
+
+  const selectUsers = () => (
+    users.map((user) => (
+      <option key={user.uid} value={user.uid}>
+        {user.name}
+      </option>
+    ))
+  );
+
+  const filterSelectUsers = (prop: string) => (
+    users.filter((user: any) => (
+      user[prop] === true
+    )).map((user) => (
+      <option key={user.uid} value={user.uid}>
+        {user.name}
+      </option>
+    ))
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -83,51 +70,47 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
           flexDirection={{ base: "column", md: "row" }}
           justifyContent="center"
         >
-          <Select
-            w={{ base: "full", md: "48" }}
-            placeholder="タスクを選択"
-            {...register("selectTask", { required: true })}
-          >
-            {taskflow.map(
-              (task) =>
-                0 < task.id &&
-                task.id < 8 && (
-                  <option key={task.id} value={task.id}>
-                    {task.status}
-                  </option>
-                )
-            )}
-          </Select>
-          <Select
-            w={{ base: "full", md: "48" }}
-            placeholder="送信先を選択"
-            {...register("selectUser", { required: true })}
-          >
-            {Number(watch("selectTask")) <= 4 &&
-              users.map((user) => (
-                <option key={user.uid} value={user.uid}>
-                  {user.name}
-                </option>
-              ))}
-            {Number(watch("selectTask")) === 5 &&
-              isoBossUsers.map((user) => (
-                <option key={user.uid} value={user.uid}>
-                  {user.name}
-                </option>
-              ))}
-            {Number(watch("selectTask")) === 6 &&
-              isoManagerUsers.map((user) => (
-                <option key={user.uid} value={user.uid}>
-                  {user.name}
-                </option>
-              ))}
-            {Number(watch("selectTask")) === 7 &&
-              isoTopManegmentUsers.map((user) => (
-                <option key={user.uid} value={user.uid}>
-                  {user.name}
-                </option>
-              ))}
-          </Select>
+          <Box>
+            <Select
+              w={{ base: "full", md: "48" }}
+              placeholder="タスクを選択"
+              {...register("selectTask", { required: true })}
+            >
+              {taskflow.map(
+                (task) =>
+                  0 < task.id &&
+                  task.id < 8 && (
+                    <option key={task.id} value={task.id}>
+                      {task.status}
+                    </option>
+                  )
+              )}
+            </Select>
+            <Box color="red" fontSize="xs">{errors.selectTask && "※タスクを選択してください"}</Box>
+          </Box>
+
+          <Box>
+
+            <Select
+              w={{ base: "full", md: "48" }}
+              placeholder="送信先を選択"
+              {...register("selectUser", { required: true })}
+            >
+              {Number(watch("selectTask")) <= 4 &&
+                selectUsers()
+              }
+              {Number(watch("selectTask")) === 5 &&
+                filterSelectUsers('isoBoss')
+              }
+              {Number(watch("selectTask")) === 6 &&
+                filterSelectUsers('isoManager')
+              }
+              {Number(watch("selectTask")) === 7 &&
+                filterSelectUsers('isoTopManegment')
+              }
+            </Select>
+            <Box color="red" fontSize="xs">{errors.selectUser && "※送信先を選択"}</Box>
+          </Box>
 
           <Button
             type="submit"
@@ -136,6 +119,7 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
             送信する
           </Button>
         </Flex>
+
       </Box>
     </form>
   );

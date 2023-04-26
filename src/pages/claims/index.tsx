@@ -81,23 +81,23 @@ const Claim: NextPage = () => {
       if (date1.getTime() <= date2.getTime()) return claim;
     });
     //担当者で絞り込み
-    newClaims = newClaims.filter((claim: { stampStaff: string }) => {
+    newClaims = newClaims.filter((claim: { stampStaff: string; }) => {
       if (!stampStaffFilter) return claim;
       if (claim.stampStaff == stampStaffFilter) return claim;
     });
-    newClaims = newClaims.filter((claim: { customer: string }) => {
+    newClaims = newClaims.filter((claim: { customer: string; }) => {
       if (!customerFilter) return claim;
       if (claim.customer.includes(customerFilter)) return claim;
     });
     //発生内容を絞り込み
-    newClaims = newClaims.filter((claim: { occurrenceSelect: string }) => {
+    newClaims = newClaims.filter((claim) => {
       if (!occurrenceFilter) return claim;
-      if (claim.occurrenceSelect == occurrenceFilter) return claim;
+      if (claim.occurrenceSelect == Number(occurrenceFilter)) return claim;
     });
     //修正処置を絞り込み
-    newClaims = newClaims.filter((claim: { amendmentSelect: string }) => {
+    newClaims = newClaims.filter((claim) => {
       if (!amendmentFilter) return claim;
-      if (claim.amendmentSelect == amendmentFilter) return claim;
+      if (claim.amendmentSelect == Number(amendmentFilter)) return claim;
     });
     //対策を絞り込み
     newClaims = newClaims.filter((claim: any) => {
@@ -141,7 +141,7 @@ const Claim: NextPage = () => {
           case 8:
             return "";
           default:
-            return users.map((user: { uid: string; name: string }) => {
+            return users.map((user: { uid: string; name: string; }) => {
               if (user.uid == claim.operator) return user.name;
             });
         }
@@ -179,8 +179,8 @@ const Claim: NextPage = () => {
   }, [users]);
 
   //iso（事務局・管理者・TM）のオブジェクトからuidのみ取り出して配列にする
-  const searchUsers = (array: { uid: string }[]) => {
-    const newUsers = array.map((user: { uid: string }) => {
+  const searchUsers = (array: { uid: string; }[]) => {
+    const newUsers = array.map((user: { uid: string; }) => {
       return user.uid;
     });
     return newUsers;
@@ -249,16 +249,16 @@ const Claim: NextPage = () => {
                       key={claim.id}
                       backgroundColor={
                         claim.operator === currentUser ||
-                        (searchUsers(isoOfficeUsers).includes(currentUser) &&
-                          (claim.status === 0 ||
-                            claim.status === 2 ||
-                            claim.status === 4)) ||
-                        (searchUsers(isoManagerUsers).includes(currentUser) &&
-                          claim.status === 6) ||
-                        (searchUsers(isoTopManegmentUsers).includes(
-                          currentUser
-                        ) &&
-                          claim.status === 7)
+                          (searchUsers(isoOfficeUsers).includes(currentUser) &&
+                            (claim.status === 0 ||
+                              claim.status === 2 ||
+                              claim.status === 4)) ||
+                          (searchUsers(isoManagerUsers).includes(currentUser) &&
+                            claim.status === 6) ||
+                          (searchUsers(isoTopManegmentUsers).includes(
+                            currentUser
+                          ) &&
+                            claim.status === 7)
                           ? "yellow.100"
                           : "white"
                       }
@@ -278,7 +278,7 @@ const Claim: NextPage = () => {
                       <Td>{claim.receptionNum}</Td>
                       <Td>
                         {users.map(
-                          (user: { uid: string; name: string }) =>
+                          (user: { uid: string; name: string; }) =>
                             user.uid == claim.stampStaff && user.name
                         )}
                       </Td>
