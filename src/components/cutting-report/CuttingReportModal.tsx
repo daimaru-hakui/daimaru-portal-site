@@ -21,12 +21,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { CuttingReportType } from "../../../types/CuttingReportType";
+import { CuttingReport } from "../../../types";
 import { useCuttingReport } from "../../hooks/useCuttingReport";
 import CuttingReportTr from "./CuttingReportTr";
 
 type Props = {
-  report: CuttingReportType;
+  report: CuttingReport;
 };
 
 const CuttingReportModal: NextPage<Props> = ({ report }) => {

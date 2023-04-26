@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { CuttingReportType } from "../../../../types/CuttingReportType";
+import { CuttingReport } from "../../../../types";
 type Data = {
-  contents: CuttingReportType[];
+  contents: CuttingReport[];
 };
 
 export default async function handler(

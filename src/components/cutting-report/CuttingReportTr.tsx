@@ -3,12 +3,12 @@ import axios from "axios";
 import { NextPage } from "next";
 import React from "react";
 import useSWR from "swr";
-import { CuttingReportType } from "../../../types/CuttingReportType";
+import { CuttingReport } from "../../../types";
 import { useCuttingReport } from "../../hooks/useCuttingReport";
 
 type Props = {
   product: any;
-  report: CuttingReportType;
+  report: CuttingReport;
 };
 
 const CuttingReportTr: NextPage<Props> = ({ product, report }) => {
