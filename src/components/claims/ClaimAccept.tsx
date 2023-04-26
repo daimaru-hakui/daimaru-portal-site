@@ -1,6 +1,6 @@
-import { Box, Button, Flex, Input } from '@chakra-ui/react';
-import { NextPage } from 'next';
-import React from 'react';
+import { Box, Button, Flex, Input } from "@chakra-ui/react";
+import { NextPage } from "next";
+import React from "react";
 
 type Props = {
   claim: {
@@ -16,7 +16,7 @@ type Props = {
   receptionDate: string;
   setReceptionDate: any;
   acceptClaim: any;
-  deleteClaim: any;
+  // deleteClaim: any;
 };
 
 const ClaimAccept: NextPage<Props> = ({
@@ -28,45 +28,45 @@ const ClaimAccept: NextPage<Props> = ({
   receptionDate,
   setReceptionDate,
   acceptClaim,
-  deleteClaim,
+  // deleteClaim,
 }) => {
   return (
     <>
       {Number(claim.status) === 0 && enabledOffice() && (
         <>
           <Flex
-            justifyContent='center'
-            w='100%'
+            justifyContent="center"
+            w="100%"
             mt={10}
-            flexDirection={{ base: 'column', md: 'row' }}
+            flexDirection={{ base: "column", md: "row" }}
           >
-            <Flex mr={{ base: '0', md: '5' }} alignItems='center'>
-              <Box fontSize='lg' fontWeight='semibold' minW='70px'>
+            <Flex mr={{ base: "0", md: "5" }} alignItems="center">
+              <Box fontSize="lg" fontWeight="semibold" minW="70px">
                 受付NO
               </Box>
               <Input
-                type='text'
-                placeholder='例 4-001'
+                type="text"
+                placeholder="例 4-001"
                 value={receptionNum}
                 onChange={(e) => setReceptionNum(e.target.value)}
               />
             </Flex>
-            <Flex alignItems='center' mt={{ base: '6', md: '0' }}>
-              <Box fontSize='lg' fontWeight='semibold' minW='70px'>
+            <Flex alignItems="center" mt={{ base: "6", md: "0" }}>
+              <Box fontSize="lg" fontWeight="semibold" minW="70px">
                 受付日
               </Box>
               <Input
-                type='date'
+                type="date"
                 value={receptionDate}
                 onChange={(e) => setReceptionDate(e.target.value)}
               />
             </Flex>
           </Flex>
-          <Flex justifyContent='center'>
+          <Flex justifyContent="center">
             <Button
               mt={6}
               mr={3}
-              colorScheme='blue'
+              colorScheme="blue"
               onClick={() => {
                 acceptClaim(queryId);
               }}
@@ -76,15 +76,15 @@ const ClaimAccept: NextPage<Props> = ({
             </Button>
             <Button
               mt={6}
-              colorScheme='red'
-              onClick={() =>
-                deleteClaim(
-                  queryId,
-                  claim.imagePath1,
-                  claim.imagePath2,
-                  claim.imagePath3
-                )
-              }
+              colorScheme="red"
+              // onClick={() =>
+              //   deleteClaim(
+              //     queryId,
+              //     claim.imagePath1,
+              //     claim.imagePath2,
+              //     claim.imagePath3
+              //   )
+              // }
             >
               削除する
             </Button>

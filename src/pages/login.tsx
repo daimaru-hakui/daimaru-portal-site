@@ -70,10 +70,12 @@ const Login: NextPage = () => {
                     placeholder="email address"
                     {...register("email", { required: true })}
                   />
-                  {errors.email && (
-                    <Box color="red">emailを入力してください</Box>
-                  )}
                 </InputGroup>
+                {errors.email && (
+                  <Box color="red" fontSize="sm">
+                    ※emailを入力してください
+                  </Box>
+                )}
               </FormControl>
               <FormControl>
                 <InputGroup>
@@ -84,10 +86,12 @@ const Login: NextPage = () => {
                     placeholder="Password"
                     {...register("password", { required: true })}
                   />
-                  {errors.password && (
-                    <Box color="red">passwordを入力してください</Box>
-                  )}
                 </InputGroup>
+                {errors.password && (
+                  <Box color="red" fontSize="sm">
+                    ※passwordを入力してください
+                  </Box>
+                )}
               </FormControl>
               <Button
                 borderRadius={0}

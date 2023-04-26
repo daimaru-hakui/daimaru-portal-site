@@ -30,26 +30,5 @@ export const useDataList = () => {
     });
   };
 
-  //掲載中（表示）案件
-  const getRequests = async () => {
-    const requestsCollectionRef = collection(db, "requestList");
-    const q = query(
-      requestsCollectionRef,
-      where("display", "==", true),
-      orderBy("createdAt", "desc")
-    );
-    onSnapshot(q, (querySnapshot) => {
-      setRequests(
-        querySnapshot.docs.map(
-          (doc) =>
-            ({
-              ...doc.data(),
-              id: doc.id,
-            } as Request)
-        )
-      );
-    });
-  };
-
-  return { getUsers, getRequests };
+  return { getUsers };
 };

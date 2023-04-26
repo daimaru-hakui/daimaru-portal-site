@@ -89,7 +89,7 @@ const Sales = () => {
     const year = date.getFullYear();
     let month = date.getMonth() + 1;
     let monthStr = "0" + month;
-    // monthStr = monthStr.slice(-2);
+    monthStr = monthStr.slice(-2);
     const result = year + "-" + month;
 
     let day = date.getDate();
@@ -99,7 +99,6 @@ const Sales = () => {
     const docRef = doc(db, "sales", `${result}_${uid}`);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) {
-      console.log("add");
       try {
         await setDoc(docRef, {
           currentUser: uid,
@@ -126,7 +125,6 @@ const Sales = () => {
       )
       .forEach((user) => {
         addSales(user.uid, user.rank);
-        console.log("mukai");
       });
   }, [registeredUser, users]);
 

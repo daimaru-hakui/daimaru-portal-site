@@ -101,3 +101,37 @@ export type CuttingReport = {
   serialNumber: number;
   username: string;
 };
+
+export type Claim = {
+  id: string;
+  author: string;
+  customer: string;
+  occurrenceDate: string;
+  occurrenceSelect: number;
+  occurrenceContent: string;
+  receptionDate: string;
+  receptionNum: string;
+  receptionist: string;
+  amendmentSelect: number;
+  amendmentContent: string;
+  counterplanSelect: number;
+  counterplanContent: string;
+  causeDepartmentSelect: number;
+  completionDate: string;
+  stampStaff: string;
+  stampCounterplan: string;
+  stampBoss: string;
+  stampManager: string;
+  stampTm: string;
+  status: number;
+  operator: string;
+  message: string;
+  createdAt: any;
+  deletedAt: any;
+  imageUrl1: string;
+  imageUrl2: string;
+  imageUrl3: string;
+  imagePath1: string;
+  imagePath2: string;
+  imagePath3: string;
+};

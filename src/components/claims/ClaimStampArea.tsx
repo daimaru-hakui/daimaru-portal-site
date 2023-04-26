@@ -11,8 +11,9 @@ const ClaimStampArea: NextPage<ClaimProps> = ({ claim, users }) => {
         mt={2}
         p={2}
         mx="auto"
-        backgroundColor="white"
-        borderRadius={6}
+        bg="white"
+        rounded="md"
+        boxShadow="md"
       >
         <Flex
           justifyContent="space-around"

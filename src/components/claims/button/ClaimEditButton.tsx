@@ -1,42 +1,23 @@
 import { Box, Button, Flex } from "@chakra-ui/react";
-import { NextPage } from "next";
 import Link from "next/link";
-import React from "react";
+import React, { FC } from "react";
+import { Claim } from "../../../../types";
+import { useAuthStore } from "../../../../store/useAuthStore";
 
 type Props = {
-  claim: {
-    status: string;
-    author: string;
-    stampStaff: string;
-    operator: string;
-  };
-  currentUser: string | undefined;
-  queryId: string | string[] | undefined;
+  claim: Claim;
   edit: boolean;
-  isEdit: any;
   setEdit: any;
-  updateClaim: any;
-  updateOccurrenceClaim: any;
-  updateAmendmentClaim: any;
-  updateCounterplanClaim: any;
-  editCancel: any;
   enabledOffice: any;
 };
 
-const ClaimEditButton: NextPage<Props> = ({
+export const ClaimEditButton: FC<Props> = ({
   claim,
-  currentUser,
-  queryId,
   edit,
-  isEdit,
   setEdit,
-  updateClaim,
-  updateOccurrenceClaim,
-  updateAmendmentClaim,
-  updateCounterplanClaim,
-  editCancel,
   enabledOffice,
 }) => {
+  const currentUser = useAuthStore((state) => state.currentUser);
   return (
     <>
       <Box w={{ base: "100%", md: "750px" }} py={2} mx="auto">
@@ -54,7 +35,6 @@ const ClaimEditButton: NextPage<Props> = ({
                   <Button
                     w="100%"
                     onClick={() => {
-                      isEdit();
                       setEdit(true);
                     }}
                   >
@@ -73,7 +53,6 @@ const ClaimEditButton: NextPage<Props> = ({
                   <Button
                     w="100%"
                     onClick={() => {
-                      isEdit();
                       setEdit(true);
                     }}
                   >
@@ -88,7 +67,6 @@ const ClaimEditButton: NextPage<Props> = ({
                   <Button
                     w="100%"
                     onClick={() => {
-                      isEdit();
                       setEdit(true);
                     }}
                   >
@@ -98,45 +76,7 @@ const ClaimEditButton: NextPage<Props> = ({
               )}
           </Flex>
         )}
-        {edit && (
-          <Flex justifyContent="space-between" w="100%">
-            <Button
-              w="95%"
-              mx={1}
-              colorScheme="telegram"
-              onClick={() => {
-                enabledOffice() && updateClaim(queryId); //事務局用アップデート（すべて）
-
-                claim.author === currentUser && updateOccurrenceClaim(queryId); //記入者アップデート（発生内容）
-
-                claim.stampStaff === currentUser &&
-                  updateAmendmentClaim(queryId); //担当者アップデート（修正処置）
-
-                (Number(claim.status) === 3 || Number(claim.status) === 5) &&
-                  claim.operator === currentUser &&
-                  updateCounterplanClaim(queryId); //対策者用・上司用アップデート（対策）
-
-                setEdit(false); //編集画面から通常画面に戻す
-              }}
-            >
-              OK
-            </Button>
-            <Button
-              w="95%"
-              mx={1}
-              colorScheme="gray"
-              onClick={() => {
-                editCancel();
-                setEdit(false);
-              }}
-            >
-              キャンセル
-            </Button>
-          </Flex>
-        )}
       </Box>
     </>
   );
 };
-
-export default ClaimEditButton;

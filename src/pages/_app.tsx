@@ -21,14 +21,15 @@ function MyApp({ Component, pageProps }: AppProps) {
   const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
   const setUsers = useAuthStore((state) => state.setUsers);
   const setRequests = useRecruitmentStore((state) => state.setRequests);
-  const { getUsers, getRequests } = useDataList();
-
-  console.log("login");
+  const { getUsers } = useDataList();
 
   useEffect(() => {
+    console.log("session");
     const getSession = async () => {
-      setSession(auth.currentUser);
-      setCurrentUser(auth.currentUser?.uid);
+      if (auth.currentUser) {
+        setSession(auth.currentUser);
+        setCurrentUser(auth.currentUser?.uid);
+      }
       onAuthStateChanged(auth, (session) => {
         if (session) {
           setSession(session);
@@ -46,6 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   // 未登録であればauthorityに登録
   useEffect(() => {
+    console.log("authority");
     if (currentUser) {
       const docRef = doc(db, "authority", `${currentUser}`);
       const addAuthority = async () => {
@@ -62,6 +64,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [session]);
 
   useEffect(() => {
+    console.log("authority");
     if (currentUser) {
       const docRef = doc(db, "authority", `${currentUser}`);
       const updateAuthority = async () => {
@@ -75,11 +78,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     getUsers();
-  }, [setUsers]);
-
-  useEffect(() => {
-    getRequests();
-  }, [setRequests]);
+  }, [session, setUsers]);
 
   return (
     <ChakraProvider>

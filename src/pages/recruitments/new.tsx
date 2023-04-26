@@ -51,7 +51,6 @@ const RecruitmentNew = () => {
     });
     return unsub;
   }, [currentUser]);
-  console.log(requests);
 
   return (
     <Flex flexDirection="column" alignItems="center">
