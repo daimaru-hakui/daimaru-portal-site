@@ -1,38 +1,57 @@
+import { useUtils } from "@/hooks/useUtils";
 import { Box, Button, Flex, Input } from "@chakra-ui/react";
-import { NextPage } from "next";
-import React from "react";
+import React, { FC } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Claim } from "../../../types";
+import { useRouter } from "next/router";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../firebase";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 type Props = {
-  claim: {
-    status: number;
-    imagePath1: string;
-    imagePath2: string;
-    imagePath3: string;
-  };
-  queryId: string | string[] | undefined;
-  enabledOffice: any;
-  receptionNum: string;
-  setReceptionNum: any;
-  receptionDate: string;
-  setReceptionDate: any;
-  acceptClaim: any;
+  claim: Claim;
   // deleteClaim: any;
 };
 
-const ClaimAccept: NextPage<Props> = ({
+type Inputs = {
+  receptionNum: string;
+  receptionDate: string;
+};
+
+export const ClaimAccept: FC<Props> = ({
   claim,
-  queryId,
-  enabledOffice,
-  receptionNum,
-  setReceptionNum,
-  receptionDate,
-  setReceptionDate,
-  acceptClaim,
   // deleteClaim,
 }) => {
+  const router = useRouter();
+  const { isAuth } = useUtils();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    updateClaimAccept(data, claim);
+  };
+
+  //クレーム報告書を受付、担当者に修正処置を依頼
+  const updateClaimAccept = async (data: Inputs, claim: Claim) => {
+    const docRef = doc(db, "claimList", claim.id);
+    await updateDoc(docRef, {
+      status: 1,
+      receptionist: currentUser,
+      receptionNum: data.receptionNum,
+      receptionDate: data.receptionDate,
+      stampOffice: currentUser,
+      operator: claim.stampStaff, //作業者
+    });
+    router.push(`/claims`);
+  };
+
   return (
-    <>
-      {Number(claim.status) === 0 && enabledOffice() && (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {Number(claim.status) === 0 && isAuth(["isoOffice"]) && (
         <>
           <Flex
             justifyContent="center"
@@ -45,10 +64,8 @@ const ClaimAccept: NextPage<Props> = ({
                 受付NO
               </Box>
               <Input
-                type="text"
                 placeholder="例 4-001"
-                value={receptionNum}
-                onChange={(e) => setReceptionNum(e.target.value)}
+                {...register("receptionNum", { required: true })}
               />
             </Flex>
             <Flex alignItems="center" mt={{ base: "6", md: "0" }}>
@@ -57,20 +74,17 @@ const ClaimAccept: NextPage<Props> = ({
               </Box>
               <Input
                 type="date"
-                value={receptionDate}
-                onChange={(e) => setReceptionDate(e.target.value)}
+                {...register("receptionDate", { required: true })}
               />
             </Flex>
           </Flex>
           <Flex justifyContent="center">
             <Button
+              type="submit"
               mt={6}
               mr={3}
               colorScheme="blue"
-              onClick={() => {
-                acceptClaim(queryId);
-              }}
-              disabled={receptionNum && receptionDate ? false : true}
+              // disabled={receptionNum && receptionDate ? false : true}
             >
               受け付ける
             </Button>
@@ -91,8 +105,6 @@ const ClaimAccept: NextPage<Props> = ({
           </Flex>
         </>
       )}
-    </>
+    </form>
   );
 };
-
-export default ClaimAccept;

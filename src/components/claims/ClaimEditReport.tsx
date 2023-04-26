@@ -28,6 +28,8 @@ import ClaimEditAttached from "./ClaimEditAttached";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Claim } from "../../../types";
 import { useRouter } from "next/router";
+import { useUtils } from "@/hooks/useUtils";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 type Props = {
   claim: Claim;
@@ -51,6 +53,8 @@ type Inputs = {
 
 export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
   const router = useRouter();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const { isAuth, isAuthor, isStampStaff, isOperator } = useUtils();
   const [fileUpload1, setFileUpload1] = useState<any>();
   const [fileUpload2, setFileUpload2] = useState<any>();
   const [fileUpload3, setFileUpload3] = useState<any>();
@@ -501,7 +505,6 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
           </Box>
         </Box>
 
-        {/* 添付書類 */}
         <Box mt={9}>
           <Flex as="h2" fontSize="lg" fontWeight="semibold">
             添付書類（※画像形式 jpeg jpg png）
@@ -565,36 +568,34 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
             w="full"
             mx={1}
             colorScheme="telegram"
-            // onClick={() => {
-            //   enabledOffice() && updateClaim(queryId); //事務局用アップデート（すべて）
+            onClick={() => {
+              isAuth(["isoOffice"]) && updateClaim(claim); //事務局用アップデート（すべて）
 
-            //   claim.author === currentUser && updateOccurrenceClaim(queryId); //記入者アップデート（発生内容）
+              isAuthor(currentUser, claim) && updateOccurrenceClaim(claim); //記入者アップデート（発生内容）
 
-            //   claim.stampStaff === currentUser && updateAmendmentClaim(queryId); //担当者アップデート（修正処置）
+              isStampStaff(currentUser, claim) && updateAmendmentClaim(claim); //担当者アップデート（修正処置）
 
-            //   (Number(claim.status) === 3 || Number(claim.status) === 5) &&
-            //     claim.operator === currentUser &&
-            //     updateCounterplanClaim(queryId); //対策者用・上司用アップデート（対策）
-
-            // }}
+              (Number(claim.status) === 3 || Number(claim.status) === 5) &&
+                isOperator(currentUser, claim) &&
+                updateCounterplanClaim(claim); //対策者用・上司用アップデート（対策）
+            }}
           >
             OK
           </Button>
         </Flex>
-
-        {/* 削除ボタン */}
-        {/* {enabledOffice() && ( */}
-        <Flex justifyContent="center">
-          <Button
-            mt={12}
-            colorScheme="red"
-            onClick={() =>
-              deleteClaim(claim.id, imagePath1, imagePath2, imagePath3)
-            }
-          >
-            クレーム報告書を削除する
-          </Button>
-        </Flex>
+        {isAuth(["isoOffice"]) && (
+          <Flex justifyContent="center">
+            <Button
+              mt={12}
+              colorScheme="red"
+              onClick={() =>
+                deleteClaim(claim.id, imagePath1, imagePath2, imagePath3)
+              }
+            >
+              クレーム報告書を削除する
+            </Button>
+          </Flex>
+        )}
       </form>
     </>
   );

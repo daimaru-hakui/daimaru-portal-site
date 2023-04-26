@@ -3,57 +3,24 @@ import { doc, updateDoc } from "firebase/firestore";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useRecoilValue } from "recoil";
 import { db } from "../../../../firebase";
 import { todayDate } from "../../../../functions";
 import { useAuthStore } from "../../../../store/useAuthStore";
+import { Claim } from "../../../../types";
+import { useDisp } from "@/hooks/useDisp";
+import { useUtils } from "@/hooks/useUtils";
 
 type Props = {
-  claim: {
-    status: string;
-    amendmentSelect: string;
-    amendmentContent: string;
-    counterplanSelect: string;
-    counterplanContent: string;
-    completionDate: string;
-    stampStaff: string;
-    stampOffice: string;
-    operator: string;
-    imagePath1: string;
-  };
-  users: {
-    uid: string;
-    name: string;
-  }[];
-  currentUser: string | undefined;
-  queryId: any;
-  receptionNum: string;
-  receptionDate: string;
-  completionDate: string;
-  counterplanSelect: string;
-  counterplanContent: string;
-  stampOffice: string;
-  operator: string;
-  enabledOffice: any;
-  enabledBossAndOffice: any;
-  enabledManager: any;
-  enabledTopManegment: any;
+  claim: Claim;
 };
 
-const ClaimConfirmSendButton: NextPage<Props> = ({
-  claim,
-  currentUser,
-  queryId,
-  receptionNum,
-  receptionDate,
-  enabledOffice,
-  enabledManager,
-  enabledTopManegment,
-}) => {
+export const ClaimConfirmSendButton: NextPage<Props> = ({ claim }) => {
+  const currentUser = useAuthStore((state) => state.currentUser);
   const router = useRouter();
-  const users = useAuthStore((state) => state.users);
   const [message, setMessage] = useState("");
   const [display, setDisplay] = useState(true);
+  const { getUserName } = useDisp();
+  const { isAuth, isOperator, isStampStaff } = useUtils();
 
   //修正処置完了 事務局へ渡す
   const amendmentClaim = async (id: string) => {
@@ -102,18 +69,13 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       setDisplay(true);
       return;
     }
-    const userName: any = users.filter(
-      (user: { uid: string; name: string }) => {
-        if (user.uid === currentUser) return true;
-      }
-    );
     const docRef = doc(db, "claimList", id);
     await updateDoc(docRef, {
       status: 4,
       operator: "事務局",
-      message: `${todayDate()} ${
-        userName[0] && userName[0].name
-      }に却下されました。\n${message}`,
+      message: `${todayDate()} ${getUserName(
+        currentUser
+      )}に却下されました。\n${message}`,
     });
     router.push(`/claims`);
   };
@@ -140,18 +102,13 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       setDisplay(true);
       return;
     }
-    const userName: any = users.filter(
-      (user: { uid: string; name: string }) => {
-        if (user.uid === currentUser) return true;
-      }
-    );
     const docRef = doc(db, "claimList", id);
     await updateDoc(docRef, {
       status: 4,
       operator: "事務局",
-      message: `${todayDate()} ${
-        userName[0] && userName[0].name
-      }（管理者）に却下されました。\n${message}`,
+      message: `${todayDate()} ${getUserName(
+        currentUser
+      )}（管理者）に却下されました。\n${message}`,
     });
     router.push(`/claims`);
   };
@@ -178,19 +135,13 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       setDisplay(true);
       return;
     }
-    const userName: any = users.filter(
-      (user: { uid: string; name: string }) => {
-        if (user.uid === currentUser) return user.name;
-      }
-    );
-
     const docRef = doc(db, "claimList", id);
     await updateDoc(docRef, {
       status: 4,
       operator: "事務局",
-      message: `${todayDate()} ${
-        userName[0] && userName[0].name
-      }（トップマネジメント）に却下されました。\n${message}`,
+      message: `${todayDate()} ${getUserName(
+        currentUser
+      )}（トップマネジメント）に却下されました。\n${message}`,
     });
     router.push(`/claims`);
   };
@@ -199,14 +150,15 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
     <>
       {/* 修正処置を記入して事務局へ送信 */}
       {Number(claim.status) === 1 &&
-        (claim.operator === currentUser ||
-          claim.stampStaff === currentUser) && (
+        (isOperator(currentUser, claim) ||
+          isStampStaff(currentUser, claim) ||
+          isAuth(["isoOffice"])) && (
           <Flex justifyContent="center">
             <Button
               mt={12}
               colorScheme="facebook"
               onClick={() => {
-                amendmentClaim(queryId);
+                amendmentClaim(claim.id);
               }}
               disabled={!claim.amendmentSelect}
             >
@@ -216,13 +168,13 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
         )}
 
       {/* 対策を記入して事務局へ送信 */}
-      {Number(claim.status) === 3 && claim.operator === currentUser && (
+      {Number(claim.status) === 3 && isOperator(currentUser, claim) && (
         <Flex justifyContent="center">
           <Button
             mt={12}
             colorScheme="facebook"
             onClick={() => {
-              counterplanClaim(queryId);
+              counterplanClaim(claim.id);
             }}
             disabled={!claim.counterplanContent}
           >
@@ -232,7 +184,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       )}
 
       {/* 上司が完了日と対策selectを記入　承認して管理職へ提出　却下して事務局へ提出 */}
-      {Number(claim.status) === 5 && claim.operator === currentUser && (
+      {Number(claim.status) === 5 && isOperator(currentUser, claim) && (
         <>
           {display ? (
             <Flex justifyContent="center">
@@ -241,7 +193,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
                 mr={3}
                 colorScheme="blue"
                 onClick={() => {
-                  bossApprovalClaim(queryId);
+                  bossApprovalClaim(claim.id);
                 }}
                 disabled={!claim.completionDate || !claim.counterplanSelect}
               >
@@ -270,7 +222,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
               />
               <Flex mt={6}>
                 <Button
-                  onClick={() => bossRejectedClaim(queryId)}
+                  onClick={() => bossRejectedClaim(claim.id)}
                   colorScheme="red"
                   w="50%"
                   mr="2"
@@ -293,7 +245,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       )}
 
       {/* 管理職が確認　承認してTMへ提出　却下して事務局へ提出 */}
-      {Number(claim.status) === 6 && enabledManager() && (
+      {Number(claim.status) === 6 && isAuth(["isoManager"]) && (
         <>
           {display ? (
             <Flex justifyContent="center">
@@ -302,7 +254,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
                 mr={3}
                 colorScheme="blue"
                 onClick={() => {
-                  managerApprovalClaim(queryId);
+                  managerApprovalClaim(claim.id);
                 }}
               >
                 承認する
@@ -330,7 +282,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
               />
               <Flex mt={6}>
                 <Button
-                  onClick={() => managerRejectedClaim(queryId)}
+                  onClick={() => managerRejectedClaim(claim.id)}
                   colorScheme="red"
                   w="50%"
                   mr="2"
@@ -353,7 +305,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
       )}
 
       {/* TMが確認　承認して完了　却下して事務局へ提出 */}
-      {Number(claim.status) === 7 && enabledTopManegment() && (
+      {Number(claim.status) === 7 && isAuth(["isoTopManegment"]) && (
         <>
           {display ? (
             <Flex justifyContent="center">
@@ -362,7 +314,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
                 mr={3}
                 colorScheme="blue"
                 onClick={() => {
-                  topManegmentApprovalClaim(queryId);
+                  topManegmentApprovalClaim(claim.id);
                 }}
               >
                 承認する
@@ -390,7 +342,7 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
               />
               <Flex mt={6}>
                 <Button
-                  onClick={() => topManegmentRejectedClaim(queryId)}
+                  onClick={() => topManegmentRejectedClaim(claim.id)}
                   colorScheme="red"
                   w="50%"
                   mr="2"
@@ -414,5 +366,3 @@ const ClaimConfirmSendButton: NextPage<Props> = ({
     </>
   );
 };
-
-export default ClaimConfirmSendButton;

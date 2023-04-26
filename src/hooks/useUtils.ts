@@ -1,4 +1,10 @@
+import { useAuthStore } from "../../store/useAuthStore";
+import { Claim } from "../../types";
+
 export const useUtils = () => {
+  const users = useAuthStore((state) => state.users);
+  const currentUser = useAuthStore((state) => state.currentUser);
+
   const starLevel = (level: string) => {
     if (level === "1") return "★";
     if (level === "2") return "★★";
@@ -61,5 +67,39 @@ export const useUtils = () => {
     }
   }
   const dateTime = date;
-  return { starLevel, dayOfWeek, todayDate, datetime, beginningDate, dateTime };
+
+  const isAuth = (props: string[]) => {
+    const user: any = users.find((user) => user.uid === currentUser);
+    if (!user) return false;
+    return props.some((prop: string) => (user[prop] ? true : false));
+  };
+
+  const isOperator = (currentUser: string = "", claim: Claim) => {
+    if (claim.operator === currentUser) {
+      return true;
+    }
+  };
+  const isStampStaff = (currentUser: string = "", claim: Claim) => {
+    if (claim.stampStaff === currentUser) {
+      return true;
+    }
+  };
+  const isAuthor = (currentUser: string = "", claim: Claim) => {
+    if (claim.author === currentUser) {
+      return true;
+    }
+  };
+
+  return {
+    isAuth,
+    starLevel,
+    dayOfWeek,
+    todayDate,
+    datetime,
+    beginningDate,
+    dateTime,
+    isOperator,
+    isStampStaff,
+    isAuthor,
+  };
 };
