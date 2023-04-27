@@ -87,7 +87,9 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
       completionDate: claim.completionDate,
     },
   });
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+
+  };
 
   //クレーム報告書を削除
   const deleteClaim = async (
@@ -326,7 +328,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                         key={list.id}
                         value={list.id}
                         {...register("occurrenceSelect")}
-                        // isDisabled={!enabledAuthor() && !enabledOffice()}
+                      // isDisabled={!enabledAuthor() && !enabledOffice()}
                       >
                         {list.title}
                       </Radio>
@@ -343,7 +345,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                         key={list.id}
                         value={list.id}
                         {...register("occurrenceSelect")}
-                        // isDisabled={!enabledAuthor() && !enabledOffice()}
+                      // isDisabled={!enabledAuthor() && !enabledOffice()}
                       >
                         {list.title}
                       </Radio>
@@ -359,7 +361,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                         key={list.id}
                         value={list.id}
                         {...register("occurrenceSelect")}
-                        // isDisabled={!enabledAuthor() && !enabledOffice()}
+                      // isDisabled={!enabledAuthor() && !enabledOffice()}
                       >
                         {list.title}
                       </Radio>
@@ -394,7 +396,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                     key={list.id}
                     value={list.id}
                     {...register("amendmentSelect")}
-                    // isDisabled={!enabledStaff() && !enabledOffice()}
+                  // isDisabled={!enabledStaff() && !enabledOffice()}
                   >
                     {list.title}
                   </Radio>
@@ -434,7 +436,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                         key={list.id}
                         value={list.id}
                         {...register("causeDepartmentSelect")}
-                        // isDisabled={!enabledStaff() && !enabledOffice()}
+                      // isDisabled={!enabledStaff() && !enabledOffice()}
                       >
                         {list.title}
                       </Radio>
@@ -454,7 +456,7 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                         key={list.id}
                         value={list.id}
                         {...register("causeDepartmentSelect")}
-                        // isDisabled={!enabledStaff() && !enabledOffice()}
+                      // isDisabled={!enabledStaff() && !enabledOffice()}
                       >
                         {list.title}
                       </Radio>
@@ -482,11 +484,11 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
                     key={list.id}
                     value={list.id}
                     {...register("counterplanSelect")}
-                    // isDisabled={
-                    //   !enabledBoss() &&
-                    //   !enabledCounterplan() &&
-                    //   !enabledOffice()
-                    // }
+                  // isDisabled={
+                  //   !enabledBoss() &&
+                  //   !enabledCounterplan() &&
+                  //   !enabledOffice()
+                  // }
                   >
                     {list.title}
                   </Radio>
@@ -568,17 +570,17 @@ export const ClaimEditReport: FC<Props> = ({ claim, setEdit }) => {
             w="full"
             mx={1}
             colorScheme="telegram"
-            onClick={() => {
-              isAuth(["isoOffice"]) && updateClaim(claim); //事務局用アップデート（すべて）
+          // onClick={() => {
+          //   isAuth(["isoOffice"]) && updateClaim(data, claim); //事務局用アップデート（すべて）
 
-              isAuthor(currentUser, claim) && updateOccurrenceClaim(claim); //記入者アップデート（発生内容）
+          //   isAuthor(currentUser, claim) && updateOccurrenceClaim(data, claim); //記入者アップデート（発生内容）
 
-              isStampStaff(currentUser, claim) && updateAmendmentClaim(claim); //担当者アップデート（修正処置）
+          //   isStampStaff(currentUser, claim) && updateAmendmentClaim(data, claim); //担当者アップデート（修正処置）
 
-              (Number(claim.status) === 3 || Number(claim.status) === 5) &&
-                isOperator(currentUser, claim) &&
-                updateCounterplanClaim(claim); //対策者用・上司用アップデート（対策）
-            }}
+          //   (Number(claim.status) === 3 || Number(claim.status) === 5) &&
+          //     isOperator(currentUser, claim) &&
+          //     updateCounterplanClaim(data, claim); //対策者用・上司用アップデート（対策）
+          // }}
           >
             OK
           </Button>

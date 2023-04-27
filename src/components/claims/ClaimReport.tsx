@@ -14,21 +14,17 @@ type Props = {
   claim: Claim;
 };
 
-const ClaimReport: FC<Props> = ({ claim }) => {
+export const ClaimReport: FC<Props> = ({ claim }) => {
   return (
     <>
-      {Number(claim.status) >= 1 && (
+      {1 <= Number(claim.status) && (
         <Flex alignItems="center" justifyContent="space-between">
-          <Flex mr={1} alignItems="center">
-            <Box fontSize="lg" fontWeight="semibold" mr={1}>
-              受付NO
-            </Box>
+          <Flex gap={2} alignItems="center" >
+            <Box>受付NO</Box>
             <Box>{claim.receptionNum}</Box>
           </Flex>
-          <Flex alignItems="center">
-            <Box fontSize="lg" fontWeight="semibold" mr={1}>
-              受付日
-            </Box>
+          <Flex gap={2} alignItems="center">
+            <Box>受付日</Box>
             <Box>{claim.receptionDate}</Box>
           </Flex>
         </Flex>
@@ -65,12 +61,10 @@ const ClaimReport: FC<Props> = ({ claim }) => {
           発生内容
         </Box>
         <Box px={2} mt={2}>
-          {claimSelectList1.map((value) => (
-            <Box key={value.id}>
-              {Number(value.id) === Number(claim.occurrenceSelect) &&
-                `${claim.occurrenceSelect && "■"}${value.headline}  ${
-                  value.title
-                }`}
+          {claimSelectList1.map(({ id, headline, title }) => (
+            <Box key={id}>
+              {Number(id) === Number(claim.occurrenceSelect) &&
+                `${claim.occurrenceSelect && "■"}${headline}  ${title}`}
             </Box>
           ))}
         </Box>
@@ -84,10 +78,10 @@ const ClaimReport: FC<Props> = ({ claim }) => {
           修正処置
         </Flex>
         <Box px={2} mt={2}>
-          {claimSelectList2.map((value) => (
-            <Box key={value.id}>
-              {Number(value.id) === Number(claim.amendmentSelect) &&
-                `${claim.amendmentSelect && "■"}${value.title}`}
+          {claimSelectList2.map(({ id, title }) => (
+            <Box key={id}>
+              {Number(id) === Number(claim.amendmentSelect) &&
+                `${claim.amendmentSelect && "■"}${title}`}
             </Box>
           ))}
           <Box mt={2} whiteSpace="pre-wrap">
@@ -101,10 +95,9 @@ const ClaimReport: FC<Props> = ({ claim }) => {
           起因部署
         </Flex>
         <Box px={2} mt={2}>
-          {claimSelectList4.map((value) => (
-            <Box key={value.id}>
-              {Number(value.id) === Number(claim.causeDepartmentSelect) &&
-                value.title}
+          {claimSelectList4.map(({ id, title }) => (
+            <Box key={id}>
+              {Number(id) === Number(claim.causeDepartmentSelect) && title}
             </Box>
           ))}
         </Box>
@@ -115,10 +108,10 @@ const ClaimReport: FC<Props> = ({ claim }) => {
           対策
         </Flex>
         <Box px={2} mt={2}>
-          {claimSelectList3.map((value) => (
-            <Box key={value.id}>
-              {Number(value.id) === Number(claim.counterplanSelect) &&
-                `${claim.counterplanSelect && "■"}${value.title}`}
+          {claimSelectList3.map(({ id, title }) => (
+            <Box key={id}>
+              {Number(id) === Number(claim.counterplanSelect) &&
+                `${claim.counterplanSelect && "■"}${title}`}
             </Box>
           ))}
           <Box mt={2} whiteSpace="pre-wrap">
@@ -146,5 +139,3 @@ const ClaimReport: FC<Props> = ({ claim }) => {
     </>
   );
 };
-
-export default ClaimReport;

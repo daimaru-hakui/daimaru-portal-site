@@ -1,6 +1,7 @@
 import { atom } from "recoil";
+import { Claim } from "../types";
 
-export const claimsState = atom({
+export const claimsState = atom<Claim[]>({
   key: "claimsState",
   default: [],
 });

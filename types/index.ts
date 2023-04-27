@@ -123,6 +123,7 @@ export type Claim = {
   stampBoss: string;
   stampManager: string;
   stampTm: string;
+  stampOffice: string;
   status: number;
   operator: string;
   message: string;

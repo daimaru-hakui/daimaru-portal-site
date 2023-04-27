@@ -1,98 +1,68 @@
 import { Box, Flex } from "@chakra-ui/react";
-import { NextPage } from "next";
-import React from "react";
-import { ClaimProps } from "../../../types/ClaimProps";
+import React, { FC } from "react";
+import { useDisp } from "@/hooks/useDisp";
+import { Claim } from "../../../types";
 
-const ClaimStampArea: NextPage<ClaimProps> = ({ claim, users }) => {
+type Props = {
+  claim: Claim;
+};
+
+export const ClaimStampArea: FC<Props> = ({ claim }) => {
+  const { getUserName } = useDisp();
+  const stampList = [{
+    id: 0,
+    title: '記入者',
+    uid: claim.author
+  }, {
+    id: 1,
+    title: '担当者',
+    uid: claim.stampStaff
+  }, {
+    id: 2,
+    title: '事務局',
+    uid: claim.stampOffice
+  }, {
+    id: 3,
+    title: '対策記入者',
+    uid: claim.stampCounterplan
+  }, {
+    id: 4,
+    title: '常務・部長',
+    uid: claim.stampBoss
+  }, {
+    id: 5,
+    title: '管理者',
+    uid: claim.stampManager
+  }, {
+    id: 6,
+    title: 'TM',
+    uid: claim.stampTm
+  }];
   return (
-    <>
-      <Box
-        w={{ base: "100%", md: "750px" }}
-        mt={2}
-        p={2}
-        mx="auto"
-        bg="white"
-        rounded="md"
-        boxShadow="md"
+
+    <Box
+      w={{ md: "750px" }}
+      mt={2}
+      p={2}
+      mx="auto"
+      bg="white"
+      rounded="md"
+      boxShadow="md"
+    >
+      <Flex
+        justifyContent="space-around"
+        flexDirection={{ base: "column-reverse", md: "row" }}
       >
-        <Flex
-          justifyContent="space-around"
-          flexDirection={{ base: "column-reverse", md: "row" }}
-        >
-          <Box textAlign="center">
-            <Box fontSize="xs">記入者</Box>
+        {stampList.map(({ id, title, uid }) => (
+          <Box key={id} textAlign="center">
+            <Box fontSize="xs">{title}</Box>
             <Box py={2} color="red" fontWeight="bold">
-              {claim.author &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.author && user.name
-                )}
+              {getUserName(uid)}
             </Box>
           </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">担当者</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampStaff &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampStaff && user.name
-                )}
-            </Box>
-          </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">事務局</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampOffice &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampOffice && user.name
-                )}
-            </Box>
-          </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">対策記入者</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampOffice &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampCounterplan && user.name
-                )}
-            </Box>
-          </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">常務・部長</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampBoss &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampBoss && user.name
-                )}
-            </Box>
-          </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">管理者</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampManager &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampManager && user.name
-                )}
-            </Box>
-          </Box>
-          <Box textAlign="center">
-            <Box fontSize="xs">TM</Box>
-            <Box py={2} color="red" fontWeight="bold">
-              {claim.stampTm &&
-                users.map(
-                  (user: { uid: string; name: string }) =>
-                    user.uid === claim.stampTm && user.name
-                )}
-            </Box>
-          </Box>
-        </Flex>
-      </Box>
-    </>
+        ))}
+      </Flex>
+    </Box >
   );
 };
 
-export default ClaimStampArea;

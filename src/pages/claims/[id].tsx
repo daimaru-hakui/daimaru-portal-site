@@ -2,41 +2,39 @@
 //クレーム報告書　個別ページ
 import React, { useEffect, useState } from "react";
 import { Box, Flex } from "@chakra-ui/react";
+import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { useRouter } from "next/router";
 import { useRecoilState } from "recoil";
 import { claimsState } from "../../../store";
+import Link from "next/link";
+import { useUtils } from "@/hooks/useUtils";
+import { NextPage } from "next";
+import { Claim } from "../../../types";
 
 import { ClaimSelectSendButton } from "../../components/claims/button/ClaimSelectSendButton";
-import ClaimReport from "../../components/claims/ClaimReport";
+import { ClaimReport } from "../../components/claims/ClaimReport";
 import { ClaimConfirmSendButton } from "../../components/claims/button/ClaimConfirmSendButton";
 import { ClaimEditButton } from "../../components/claims/button/ClaimEditButton";
-import ClaimProgress from "../../components/claims/ClaimProgress";
+import { ClaimProgress } from "../../components/claims/ClaimProgress";
 import { ClaimMessage } from "../../components/claims/ClaimMessage";
-import Link from "next/link";
-import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
-import ClaimStampArea from "../../components/claims/ClaimStampArea";
+import { ClaimStampArea } from "../../components/claims/ClaimStampArea";
 import { ClaimAccept } from "../../components/claims/ClaimAccept";
-import { useAuthStore } from "../../../store/useAuthStore";
 import { ClaimEditReport } from "@/components/claims/ClaimEditReport";
-import { useUtils } from "@/hooks/useUtils";
 
-//クレーム報告書作成
-
-const ClaimId = () => {
+const ClaimId: NextPage = () => {
   const router = useRouter();
   const queryId = router.query.id;
-  const users = useAuthStore((state) => state.users);
   const { isAuth } = useUtils();
-  const [claim, setClaim] = useState<any>([]); //クレームの個別記事を取得
-  const [claims, setClaims] = useRecoilState<any>(claimsState); //クレーム一覧を取得
+  const [claim, setClaim] = useState<Claim>(); //クレームの個別記事を取得
+  const [claims, setClaims] = useRecoilState<Claim[]>(claimsState); //クレーム一覧を取得
   const [edit, setEdit] = useState(false); //編集画面切替
 
   // クレーム報告書を取得;
   useEffect(() => {
     onSnapshot(doc(db, "claimList", `${queryId}`), (doc) => {
-      setClaim({ ...doc.data(), id: doc.id });
+      setClaim({ ...doc.data(), id: doc.id } as Claim);
     });
   }, [queryId, edit]);
 
@@ -48,7 +46,7 @@ const ClaimId = () => {
         currentIndex = index;
       }
     });
-    const array = claims.filter((claim: any, index: number) => {
+    const array = claims.filter((claim, index: number) => {
       if (currentIndex + page === index) return claim.id;
     });
     let nextId;
@@ -90,7 +88,7 @@ const ClaimId = () => {
             <ClaimMessage claim={claim} />
 
             {/* ステータスの進捗 */}
-            <ClaimProgress claim={claim} users={users} />
+            <ClaimProgress claim={claim} />
 
             {/* 編集ボタン 未処理以外「担当者」と「事務局」と「作業者」のみ*/}
             <ClaimEditButton claim={claim} edit={edit} setEdit={setEdit} />
@@ -126,7 +124,7 @@ const ClaimId = () => {
             </Box>
 
             {/* スタンプエリア */}
-            <ClaimStampArea claim={claim} users={users} />
+            <ClaimStampArea claim={claim} />
 
             {/* 編集ボタン 未処理以外「担当者」と「事務局」と「作業者」のみ*/}
             <ClaimEditButton claim={claim} edit={edit} setEdit={setEdit} />
