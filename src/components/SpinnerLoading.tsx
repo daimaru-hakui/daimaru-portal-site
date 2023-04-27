@@ -10,7 +10,7 @@ const SpinnerLoading: NextPage = () => {
       {isLoading && (
         <Flex
           position="fixed"
-          width="100%"
+          width="full"
           height="100vh"
           justifyContent="center"
           alignItems="center"

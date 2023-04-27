@@ -21,11 +21,10 @@ import {
   claimSelectList3,
 } from "../../../data";
 import Link from "next/link";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import {
   amendmentState,
   causeDepartmentState,
-  claimsState,
   counterplanState,
   customerState,
   occurrenceState,
@@ -35,11 +34,12 @@ import {
 } from "../../../store";
 import ClaimFilterArea from "../../components/claims/ClaimFilterArea";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useClaimStore } from "../../../store/useClaimStore";
 
 const Claim: NextPage = () => {
   const currentUser = useAuthStore((state) => state.currentUser);
   const users = useAuthStore((state) => state.users);
-  const claims = useRecoilValue(claimsState); //クレーム一覧リスト
+  const claims = useClaimStore((state) => state.claims);
 
   const [isoOfficeUsers, setIsoOfficeUsers] = useState<any>([]);
   const [isoManagerUsers, setIsoManagerUsers] = useState<any>([]);
@@ -81,11 +81,11 @@ const Claim: NextPage = () => {
       if (date1.getTime() <= date2.getTime()) return claim;
     });
     //担当者で絞り込み
-    newClaims = newClaims.filter((claim: { stampStaff: string; }) => {
+    newClaims = newClaims.filter((claim: { stampStaff: string }) => {
       if (!stampStaffFilter) return claim;
       if (claim.stampStaff == stampStaffFilter) return claim;
     });
-    newClaims = newClaims.filter((claim: { customer: string; }) => {
+    newClaims = newClaims.filter((claim: { customer: string }) => {
       if (!customerFilter) return claim;
       if (claim.customer.includes(customerFilter)) return claim;
     });
@@ -141,7 +141,7 @@ const Claim: NextPage = () => {
           case 8:
             return "";
           default:
-            return users.map((user: { uid: string; name: string; }) => {
+            return users.map((user: { uid: string; name: string }) => {
               if (user.uid == claim.operator) return user.name;
             });
         }
@@ -150,37 +150,9 @@ const Claim: NextPage = () => {
     }
   };
 
-  //各リストを取得
-  useEffect(() => {
-    //ISO 事務局のリスト(オブジェクト）
-    setIsoOfficeUsers(
-      users.filter((user: any) => {
-        return user.isoOffice === true;
-      })
-    );
-    //ISOマネージャーのリスト(オブジェクト）
-    setIsoManagerUsers(
-      users.filter((user: any) => {
-        return user.isoManager === true;
-      })
-    );
-    //ISO トップマネジメントのリスト(オブジェクト）
-    setIsoTopManegmentUsers(
-      users.filter((user: any) => {
-        return user.isoTopManegment === true;
-      })
-    );
-    //ISO 上司のリスト(オブジェクト）
-    setIsoBossUsers(
-      users.filter((user: any) => {
-        return user.isoBoss === true;
-      })
-    );
-  }, [users]);
-
   //iso（事務局・管理者・TM）のオブジェクトからuidのみ取り出して配列にする
-  const searchUsers = (array: { uid: string; }[]) => {
-    const newUsers = array.map((user: { uid: string; }) => {
+  const searchUsers = (array: { uid: string }[]) => {
+    const newUsers = array.map((user: { uid: string }) => {
       return user.uid;
     });
     return newUsers;
@@ -249,16 +221,16 @@ const Claim: NextPage = () => {
                       key={claim.id}
                       backgroundColor={
                         claim.operator === currentUser ||
-                          (searchUsers(isoOfficeUsers).includes(currentUser) &&
-                            (claim.status === 0 ||
-                              claim.status === 2 ||
-                              claim.status === 4)) ||
-                          (searchUsers(isoManagerUsers).includes(currentUser) &&
-                            claim.status === 6) ||
-                          (searchUsers(isoTopManegmentUsers).includes(
-                            currentUser
-                          ) &&
-                            claim.status === 7)
+                        (searchUsers(isoOfficeUsers).includes(currentUser) &&
+                          (claim.status === 0 ||
+                            claim.status === 2 ||
+                            claim.status === 4)) ||
+                        (searchUsers(isoManagerUsers).includes(currentUser) &&
+                          claim.status === 6) ||
+                        (searchUsers(isoTopManegmentUsers).includes(
+                          currentUser
+                        ) &&
+                          claim.status === 7)
                           ? "yellow.100"
                           : "white"
                       }
@@ -278,7 +250,7 @@ const Claim: NextPage = () => {
                       <Td>{claim.receptionNum}</Td>
                       <Td>
                         {users.map(
-                          (user: { uid: string; name: string; }) =>
+                          (user: { uid: string; name: string }) =>
                             user.uid == claim.stampStaff && user.name
                         )}
                       </Td>

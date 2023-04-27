@@ -7,10 +7,10 @@ import { useRouter } from "next/router";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useClaims } from "@/hooks/useClaims";
 
 type Props = {
   claim: Claim;
-  // deleteClaim: any;
 };
 
 type Inputs = {
@@ -18,13 +18,11 @@ type Inputs = {
   receptionDate: string;
 };
 
-export const ClaimAccept: FC<Props> = ({
-  claim,
-  // deleteClaim,
-}) => {
+export const ClaimAccept: FC<Props> = ({ claim }) => {
   const router = useRouter();
   const { isAuth } = useUtils();
   const currentUser = useAuthStore((state) => state.currentUser);
+  const { deleteClaim } = useClaims();
   const {
     register,
     handleSubmit,
@@ -79,27 +77,10 @@ export const ClaimAccept: FC<Props> = ({
             </Flex>
           </Flex>
           <Flex justifyContent="center">
-            <Button
-              type="submit"
-              mt={6}
-              mr={3}
-              colorScheme="blue"
-              // disabled={receptionNum && receptionDate ? false : true}
-            >
+            <Button type="submit" mt={6} mr={3} colorScheme="blue">
               受け付ける
             </Button>
-            <Button
-              mt={6}
-              colorScheme="red"
-              // onClick={() =>
-              //   deleteClaim(
-              //     queryId,
-              //     claim.imagePath1,
-              //     claim.imagePath2,
-              //     claim.imagePath3
-              //   )
-              // }
-            >
+            <Button mt={6} colorScheme="red" onClick={() => deleteClaim(claim)}>
               削除する
             </Button>
           </Flex>

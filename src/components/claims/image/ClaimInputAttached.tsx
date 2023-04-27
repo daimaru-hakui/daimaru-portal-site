@@ -1,13 +1,15 @@
 import { Box } from "@chakra-ui/react";
-import { NextPage } from "next";
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {
   fileUpload: any;
-  setFileUpload: any;
+  setFileUpload: Function;
 };
 
-const ClaimInputAttached: NextPage<Props> = ({ fileUpload, setFileUpload }) => {
+export const ClaimInputAttached: FC<Props> = ({
+  fileUpload,
+  setFileUpload,
+}) => {
   return (
     <>
       <Box mt={3}>
@@ -28,5 +30,3 @@ const ClaimInputAttached: NextPage<Props> = ({ fileUpload, setFileUpload }) => {
     </>
   );
 };
-
-export default ClaimInputAttached;

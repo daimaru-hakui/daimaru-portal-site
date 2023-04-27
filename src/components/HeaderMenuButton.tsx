@@ -88,6 +88,7 @@ export const HeaderMenuButton: FC = () => {
         {Administrator.includes(currentUser || "") && (
           <>
             {MenuItemEL("管理者ページ", "/admin")}
+            {/* {MenuItemEL("profile", "/profile")} */}
             <MenuDivider />
           </>
         )}

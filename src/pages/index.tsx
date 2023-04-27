@@ -1,15 +1,10 @@
 import type { GetStaticProps, NextPage } from "next";
-import { useEffect } from "react";
 import Head from "next/head";
 import Information from "../components/toppage/Information";
 import QuickLink from "../components/toppage/QuickLink";
 import Slogan from "../components/toppage/Slogan";
 import CatalogArea from "../components/toppage/CatalogArea";
 import { Box, Flex, Stack } from "@chakra-ui/react";
-import { db } from "../../firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { useSetRecoilState } from "recoil";
-import { claimsState } from "../../store/";
 import { AlcoholCheckArea } from "../components/toppage/AlcoholCheckArea";
 import { ClaimArea } from "../components/toppage/ClaimArea";
 import { RecruitmentArea } from "../components/toppage/RecruitmentArea";
@@ -17,22 +12,6 @@ import { SalesArea } from "../components/toppage/SalesArea";
 import CuttingReportArea from "../components/toppage/CuttingReportArea";
 
 const Home: NextPage<any> = ({ categoryData, newsData, linkData }) => {
-  const setClaims = useSetRecoilState<any>(claimsState); //クレーム一覧リスト
-
-  //【クレーム】クレーム一覧リスト取得
-  useEffect(() => {
-    const claimsCollectionRef = collection(db, "claimList");
-    const q = query(claimsCollectionRef, orderBy("receptionNum", "desc"));
-    onSnapshot(q, (querySnapshot) => {
-      setClaims(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
-      );
-    });
-  }, [setClaims]);
-
   return (
     <>
       <Head>
@@ -41,7 +20,7 @@ const Home: NextPage<any> = ({ categoryData, newsData, linkData }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box as="main">
-        <Flex w="100%" gap={6} flexDirection={{ base: "column", lg: "row" }}>
+        <Flex w="full" gap={6} flexDirection={{ base: "column", lg: "row" }}>
           <Box flex={1}>
             <Stack spacing={6}>
               <CuttingReportArea />

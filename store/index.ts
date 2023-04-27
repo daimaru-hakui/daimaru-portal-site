@@ -1,10 +1,4 @@
 import { atom } from "recoil";
-import { Claim } from "../types";
-
-export const claimsState = atom<Claim[]>({
-  key: "claimsState",
-  default: [],
-});
 
 //クレーム報告書 フィルター
 ////////////////////////////////////////

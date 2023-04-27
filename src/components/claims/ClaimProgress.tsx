@@ -9,12 +9,7 @@ type Props = {
 
 export const ClaimProgress: FC<Props> = ({ claim }) => {
   return (
-    <Flex
-      w={{ base: "100%", md: "750px" }}
-      mx="auto"
-      py={6}
-      justifyContent="space-between"
-    >
+    <Flex w={{ md: "750px" }} mx="auto" py={6} justifyContent="space-between">
       {taskflow.map((task, index) => (
         <Flex
           key={task.id}
@@ -28,9 +23,7 @@ export const ClaimProgress: FC<Props> = ({ claim }) => {
           borderLeft="1px"
           borderLeftRadius={index === 0 ? 6 : 0}
           borderRightRadius={index === taskflow.length - 1 ? 6 : 0}
-          backgroundColor={
-            task.id === Number(claim.status) ? "#ffc107" : "gray"
-          }
+          bg={task.id === Number(claim.status) ? "#ffc107" : "gray"}
         >
           {task.status}
         </Flex>

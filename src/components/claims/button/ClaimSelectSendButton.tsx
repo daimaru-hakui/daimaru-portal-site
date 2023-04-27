@@ -40,23 +40,21 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
     router.push("/claims");
   };
 
-  const selectUsers = () => (
+  const selectUsers = () =>
     users.map((user) => (
       <option key={user.uid} value={user.uid}>
         {user.name}
       </option>
-    ))
-  );
+    ));
 
-  const filterSelectUsers = (prop: string) => (
-    users.filter((user: any) => (
-      user[prop] === true
-    )).map((user) => (
-      <option key={user.uid} value={user.uid}>
-        {user.name}
-      </option>
-    ))
-  );
+  const filterSelectUsers = (prop: string) =>
+    users
+      .filter((user: any) => user[prop] === true)
+      .map((user) => (
+        <option key={user.uid} value={user.uid}>
+          {user.name}
+        </option>
+      ));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -72,7 +70,7 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
         >
           <Box>
             <Select
-              w={{ base: "full", md: "48" }}
+              w={{ md: "48" }}
               placeholder="タスクを選択"
               {...register("selectTask", { required: true })}
             >
@@ -86,40 +84,34 @@ export const ClaimSelectSendButton: FC<Props> = ({ claim }) => {
                   )
               )}
             </Select>
-            <Box color="red" fontSize="xs">{errors.selectTask && "※タスクを選択してください"}</Box>
+            <Box color="red" fontSize="xs">
+              {errors.selectTask && "※タスクを選択してください"}
+            </Box>
           </Box>
 
           <Box>
-
             <Select
               w={{ base: "full", md: "48" }}
               placeholder="送信先を選択"
               {...register("selectUser", { required: true })}
             >
-              {Number(watch("selectTask")) <= 4 &&
-                selectUsers()
-              }
+              {Number(watch("selectTask")) <= 4 && selectUsers()}
               {Number(watch("selectTask")) === 5 &&
-                filterSelectUsers('isoBoss')
-              }
+                filterSelectUsers("isoBoss")}
               {Number(watch("selectTask")) === 6 &&
-                filterSelectUsers('isoManager')
-              }
+                filterSelectUsers("isoManager")}
               {Number(watch("selectTask")) === 7 &&
-                filterSelectUsers('isoTopManegment')
-              }
+                filterSelectUsers("isoTopManegment")}
             </Select>
-            <Box color="red" fontSize="xs">{errors.selectUser && "※送信先を選択"}</Box>
+            <Box color="red" fontSize="xs">
+              {errors.selectUser && "※送信先を選択"}
+            </Box>
           </Box>
 
-          <Button
-            type="submit"
-            disabled={watch("selectTask") && watch("selectUser") ? false : true}
-          >
+          <Button type="submit" colorScheme="blue">
             送信する
           </Button>
         </Flex>
-
       </Box>
     </form>
   );

@@ -9,10 +9,9 @@ import {
 } from "firebase/firestore";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { db } from "../../../firebase";
-import { claimsState } from "../../../store";
 import { useAuthStore } from "../../../store/useAuthStore";
+import { useClaimStore } from "../../../store/useClaimStore";
 
 const animationKeyframes = keyframes`
 0% { background-color: red; }
@@ -22,7 +21,7 @@ const animationKeyframes = keyframes`
 const animation = `${animationKeyframes} 2s ease-in-out infinite`;
 
 export const ClaimArea = () => {
-  const claims = useRecoilValue(claimsState);
+  const claims = useClaimStore((state) => state.claims);
   const users = useAuthStore((state) => state.users);
   const currentUser = useAuthStore((state) => state.currentUser);
   const [claimCount, setClaimCount] = useState(0);

@@ -10,108 +10,38 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { db, storage } from "../../../firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import ClaimInputAttached from "../../components/claims/new/ClaimInputAttached";
+import { ClaimInputAttached } from "../../components/claims/image/ClaimInputAttached";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Claim, User } from "../../../types";
 import { useDisp } from "@/hooks/useDisp";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { claimSelectList2 } from "../../../data";
-import { useLoadingStore } from "../../../store/useLoadingStore";
+import { useClaims } from "@/hooks/useClaims";
 
 const ClaimNew = () => {
-  const router = useRouter();
   const currentUser = useAuthStore((state) => state.currentUser);
   const users = useAuthStore((state) => state.users);
-  const setIsLoading = useLoadingStore((state) => state.setIsLoading);
-  const [filterUsers, setFilterUsers] = useState<User[]>([]); //絞り込んだユーザー一覧リスト
+  const [filterUsers, setFilterUsers] = useState<User[]>([]);
   const { getUserName } = useDisp();
-  const [fileUpload1, setFileUpload1] = useState<any>();
-  const [fileUpload2, setFileUpload2] = useState<any>();
-  const [fileUpload3, setFileUpload3] = useState<any>();
+  const {
+    addClaim,
+    fileUpload1,
+    fileUpload2,
+    fileUpload3,
+    setFileUpload1,
+    setFileUpload2,
+    setFileUpload3,
+  } = useClaims();
+
   const {
     register,
     handleSubmit,
-    watch,
     getValues,
     formState: { errors },
   } = useForm<Claim>();
   const onSubmit: SubmitHandler<Claim> = (data) => {
-    console.log(data);
-    AddClaim(data);
-  };
-
-  const AddClaim = async (data: Claim) => {
-    const result = window.confirm("提出して宜しいでしょうか？");
-    if (!result) return;
-    setIsLoading(true);
-    try {
-      const docRef = await addDoc(collection(db, "claimList"), {
-        customer: data.customer, //顧客名
-        occurrenceDate: data.occurrenceDate, //発生日
-        occurrenceSelect: Number(data.occurrenceSelect), //発生選択
-        occurrenceContent: data.occurrenceContent, //発生内容
-        amendmentSelect: Number(data.amendmentSelect) || "", //修正処置選択
-        amendmentContent: data.amendmentContent, //修正処置内容
-        causeDepartmentSelect: "", //起因部署
-        counterplanSelect: "", //対策選択
-        counterplanContent: "", //対策内容
-        completionDate: "", //完了日
-        receptionDate: "", //受付日
-        receptionist: "", //受付者
-        receptionNum: "未設定", //受付NO.
-        author: currentUser, //記入者
-        stampStaff: data.stampStaff, //担当者ハンコ
-        stampOffice: "", //事務局ハンコ
-        stampBoss: "", //上司ハンコ
-        stampManager: "", //管理者ハンコ
-        stampTm: "", //TMハンコ
-        status: 0, //ステータス
-        deletedAt: null, //論理削除
-        createdAt: serverTimestamp(), //作成日
-        operator: "事務局", //作業者
-      });
-
-      fileUpload1 && onFileUpload(docRef.id, fileUpload1, 1);
-      fileUpload2 && onFileUpload(docRef.id, fileUpload2, 2);
-      fileUpload3 && onFileUpload(docRef.id, fileUpload3, 3);
-
-      router.push("/claims");
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 画像をアップロード;
-  const onFileUpload = (id: string, fileUpload: any, num: number) => {
-    const file = fileUpload[0];
-    const storageRef = ref(
-      storage,
-      `images/claims/${id}/${fileUpload[0].name}`
-    );
-    uploadBytes(storageRef, file).then(() => {
-      getDownloadURL(
-        ref(storage, `images/claims/${id}/${fileUpload[0].name}`)
-      ).then((url) => {
-        const docRef = doc(db, "claimList", id);
-        updateDoc(docRef, {
-          ["imageUrl" + num]: url,
-          ["imagePath" + num]: storageRef.fullPath,
-        });
-      });
-    });
+    addClaim(data);
   };
 
   //ユーザーリストを取得
@@ -285,19 +215,7 @@ const ClaimNew = () => {
           />
         </Box>
         <Box mt={12} textAlign="center">
-          <Button
-            type="submit"
-            colorScheme="blue"
-            // disabled={
-            //   customer &&
-            //   occurrenceDate &&
-            //   occurrenceSelect &&
-            //   occurrenceContent &&
-            //   stampStaff
-            //     ? false
-            //     : true
-            // }
-          >
+          <Button type="submit" colorScheme="blue">
             提出する
           </Button>
         </Box>

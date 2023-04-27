@@ -76,7 +76,7 @@ export const AlcoholCheckArea: FC = () => {
 
   return (
     <>
-      {!alcoholList?.member.includes(currentUser || "") && (
+      {!alcoholList?.member?.includes(currentUser || "") && (
         <>
           <Flex
             alignItems="center"
