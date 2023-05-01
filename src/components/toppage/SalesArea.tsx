@@ -2,7 +2,6 @@ import { Box, Button, keyframes } from "@chakra-ui/react";
 import { doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { Administrator } from "../../../data";
 import { db } from "../../../firebase";
 import { useAuthStore } from "../../../store/useAuthStore";

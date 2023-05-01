@@ -3,14 +3,12 @@ import "../styles/globals.css";
 import { useEffect } from "react";
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
-import { RecoilRoot } from "recoil";
 import Layout from "../components/Layout";
 import { auth, db } from "../../firebase";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { useDataList } from "@/hooks/useDataList";
-import { useRecruitmentStore } from "../../store/useRecruitmentStore";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { useClaimStore } from "../../store/useClaimStore";
 
@@ -87,11 +85,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ChakraProvider>
-      <RecoilRoot>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </RecoilRoot>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </ChakraProvider>
   );
 }

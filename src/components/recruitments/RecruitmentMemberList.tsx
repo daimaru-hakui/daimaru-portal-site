@@ -1,6 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState, FC } from "react";
-import { useRecoilValue } from "recoil";
 import { Request, User } from "../../../types";
 import { useAuthStore } from "../../../store/useAuthStore";
 

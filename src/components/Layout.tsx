@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { Box } from "@chakra-ui/react";
 import { useAuthStore } from "../../store/useAuthStore";
 import SpinnerLoading from "./SpinnerLoading";
-import { useRecoilValue } from "recoil";
 import { useLoadingStore } from "../../store/useLoadingStore";
 
 type Props = {

@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import React, { FC } from "react";
-import { useRecoilValue } from "recoil";
 import { auth } from "../../firebase";
 import { Administrator } from "../../data";
 import { HamburgerIcon } from "@chakra-ui/icons";

@@ -23,7 +23,6 @@ import {
   startAt,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { Administrator } from "../../../data";
 import { db } from "../../../firebase";
 import { SalesEditModal } from "../../components/sales/SalesEditModal";
