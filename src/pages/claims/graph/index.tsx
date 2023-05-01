@@ -11,6 +11,10 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { claimSelectList3, claimSelectList4 } from "../../../../data";
+import { useUtils } from "@/hooks/useUtils";
+import PieChart from "../../../components/claims/chart/PieChart";
 import {
   collection,
   endAt,
@@ -18,24 +22,31 @@ import {
   orderBy,
   query,
   startAt,
-  where,
 } from "firebase/firestore";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import {
-  claimSelectList1,
-  claimSelectList3,
-  claimSelectList4,
-} from "../../../../data";
-import { auth, db } from "../../../../firebase";
-import { beginningDate, todayDate } from "../../../../functions";
-import PieChart from "../../../components/claims/chart/PieChart";
+import { db } from "../../../../firebase";
+import { Claim } from "../../../../types";
 
 const GraphClaim = () => {
-  const [claims, setClaims] = useState<any>([]); //クレーム一覧リスト
-  const [startAtDate, setStartAtDate] = useState(beginningDate());
-  const [endAtDate, setEndAtDate] = useState(todayDate());
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const { beginningDate, todayDate } = useUtils();
+  const [startAtDate, setStartAtDate] = useState(beginningDate);
+  const [endAtDate, setEndAtDate] = useState(todayDate);
+
+  const countClaim = (str: string, num: number) => {
+    let count: string[] = [];
+    claims.forEach((claim: any) => {
+      if (Number(claim[str]) === num) count.push(claim[str]);
+    });
+    return count.length;
+  };
+
+  const countClaimSum = (str: string) => {
+    let count: string[] = [];
+    claims.forEach((claim: any) => {
+      if (Number(claim[str])) count.push(claim[str]);
+    });
+    return count.length;
+  };
 
   //クレーム一覧を取得
   useEffect(() => {
@@ -48,21 +59,16 @@ const GraphClaim = () => {
     );
     getDocs(q).then((querySnapshot) => {
       setClaims(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
+        querySnapshot.docs.map(
+          (doc) =>
+            ({
+              ...doc.data(),
+              id: doc.id,
+            } as Claim)
+        )
       );
     });
   }, [startAtDate, endAtDate]);
-
-  const countClaims = (str: any, num: number) => {
-    let count: string[] = [];
-    claims.forEach((claim: any) => {
-      if (Number(claim[str]) === num) count.push(claim[str]);
-    });
-    return count.length;
-  };
 
   return (
     <Flex flexWrap="wrap" justifyContent="center">
@@ -72,8 +78,8 @@ const GraphClaim = () => {
         w={{ base: "100%", lg: "45%" }}
         mx={{ base: 0, lg: 3 }}
         p={6}
-        borderRadius={6}
-        backgroundColor="white"
+        rounded={6}
+        bg="white"
       >
         <Flex w="full" fontSize="xl">
           <Box mr="2" fontWeight="bold">
@@ -82,9 +88,9 @@ const GraphClaim = () => {
           <Box>クレーム数 {claims.length} 件</Box>
         </Flex>
         <Flex
-          flexDirection={{ base: "column" }}
           mt={3}
           w="full"
+          flexDirection={{ base: "column" }}
           justifyContent="space-between"
         >
           <Box mt={6} mr={3} w={{ base: "100%" }}>
@@ -114,12 +120,12 @@ const GraphClaim = () => {
         mt={{ base: 6, lg: 0 }}
         mx={{ base: 0, lg: 3 }}
         p={6}
-        backgroundColor="white"
-        borderRadius={6}
+        bg="white"
+        rounded={6}
         justifyContent="space-between"
         flexDirection={{ base: "column", lg: "row" }}
       >
-        <Box w={{ base: "100%", lg: "30%" }}>
+        <Box w={{ lg: "30%" }}>
           <TableContainer>
             <Table size="sm">
               <Thead>
@@ -132,7 +138,7 @@ const GraphClaim = () => {
                 {claimSelectList4.map((list, index) => (
                   <Tr key={list.id}>
                     <Td>{list.title}</Td>
-                    <Td>{countClaims("causeDepartmentSelect", index + 1)}</Td>
+                    <Td>{countClaim("causeDepartmentSelect", index + 1)}</Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -142,31 +148,24 @@ const GraphClaim = () => {
                     合計
                   </Th>
                   <Th fontSize="sm">
-                    {countClaims("causeDepartmentSelect", 1) +
-                      countClaims("causeDepartmentSelect", 2) +
-                      countClaims("causeDepartmentSelect", 3) +
-                      countClaims("causeDepartmentSelect", 4) +
-                      countClaims("causeDepartmentSelect", 5) +
-                      countClaims("causeDepartmentSelect", 6) +
-                      countClaims("causeDepartmentSelect", 7) +
-                      countClaims("causeDepartmentSelect", 8)}
+                    {countClaimSum("causeDepartmentSelect")}
                   </Th>
                 </Tr>
               </Tfoot>
             </Table>
           </TableContainer>
         </Box>
-        <Box mt={{ base: 6 }} w={{ base: "100%", lg: "65%" }}>
+        <Box mt={{ base: 6 }} w={{ lg: "65%" }}>
           <PieChart
             values={[
-              countClaims("causeDepartmentSelect", 1),
-              countClaims("causeDepartmentSelect", 2),
-              countClaims("causeDepartmentSelect", 3),
-              countClaims("causeDepartmentSelect", 4),
-              countClaims("causeDepartmentSelect", 5),
-              countClaims("causeDepartmentSelect", 6),
-              countClaims("causeDepartmentSelect", 7),
-              countClaims("causeDepartmentSelect", 8),
+              countClaim("causeDepartmentSelect", 1),
+              countClaim("causeDepartmentSelect", 2),
+              countClaim("causeDepartmentSelect", 3),
+              countClaim("causeDepartmentSelect", 4),
+              countClaim("causeDepartmentSelect", 5),
+              countClaim("causeDepartmentSelect", 6),
+              countClaim("causeDepartmentSelect", 7),
+              countClaim("causeDepartmentSelect", 8),
             ]}
             labels={[
               "R&D事業部",
@@ -188,12 +187,12 @@ const GraphClaim = () => {
         mt={6}
         mx={{ base: 0, lg: 3 }}
         p={6}
-        backgroundColor="white"
-        borderRadius={6}
+        bg="white"
+        rounded={6}
         justifyContent="space-between"
         flexDirection={{ base: "column", lg: "row" }}
       >
-        <Box w={{ base: "100%", lg: "30%" }}>
+        <Box w={{ lg: "30%" }}>
           <TableContainer>
             <Table size="sm">
               <Thead>
@@ -205,30 +204,30 @@ const GraphClaim = () => {
               <Tbody>
                 <Tr>
                   <Td>製品不良</Td>
-                  <Td>{countClaims("occurrenceSelect", 1)}</Td>
+                  <Td>{countClaim("occurrenceSelect", 1)}</Td>
                 </Tr>
                 <Tr>
                   <Td>納品書</Td>
-                  <Td>{countClaims("occurrenceSelect", 2)}</Td>
+                  <Td>{countClaim("occurrenceSelect", 2)}</Td>
                 </Tr>
                 <Tr>
                   <Td>商品間違い</Td>
-                  <Td>{countClaims("occurrenceSelect", 3)}</Td>
+                  <Td>{countClaim("occurrenceSelect", 3)}</Td>
                 </Tr>
                 <Tr>
                   <Td>住所等</Td>
-                  <Td>{countClaims("occurrenceSelect", 5)}</Td>
+                  <Td>{countClaim("occurrenceSelect", 5)}</Td>
                 </Tr>
                 <Tr>
                   <Td>未納品</Td>
-                  <Td>{countClaims("occurrenceSelect", 6)}</Td>
+                  <Td>{countClaim("occurrenceSelect", 6)}</Td>
                 </Tr>
                 <Tr>
                   <Td>その他</Td>
                   <Td>
-                    {countClaims("occurrenceSelect", 4) +
-                      countClaims("occurrenceSelect", 7) +
-                      countClaims("occurrenceSelect", 8)}
+                    {countClaim("occurrenceSelect", 4) +
+                      countClaim("occurrenceSelect", 7) +
+                      countClaim("occurrenceSelect", 8)}
                   </Td>
                 </Tr>
               </Tbody>
@@ -238,32 +237,24 @@ const GraphClaim = () => {
                     合計
                   </Th>
                   <Th fontSize="sm">
-                    {countClaims("occurrenceSelect", 1) +
-                      countClaims("occurrenceSelect", 2) +
-                      countClaims("occurrenceSelect", 3) +
-                      countClaims("occurrenceSelect", 4) +
-                      countClaims("occurrenceSelect", 5) +
-                      countClaims("occurrenceSelect", 6) +
-                      countClaims("occurrenceSelect", 7) +
-                      countClaims("occurrenceSelect", 8)}
+                    {<Td>{countClaimSum("occurrenceSelect")}</Td>}
                   </Th>
                 </Tr>
               </Tfoot>
             </Table>
           </TableContainer>
         </Box>
-        <Box mt={{ base: 6 }} w={{ base: "100%", lg: "65%" }}>
+        <Box mt={{ base: 6 }} w={{ lg: "65%" }}>
           <PieChart
             values={[
-              countClaims("occurrenceSelect", 1),
-              countClaims("occurrenceSelect", 2),
-              countClaims("occurrenceSelect", 3),
-              countClaims("occurrenceSelect", 5),
-              countClaims("occurrenceSelect", 6),
-
-              countClaims("occurrenceSelect", 4) +
-                countClaims("occurrenceSelect", 7) +
-                countClaims("occurrenceSelect", 8),
+              countClaim("occurrenceSelect", 1),
+              countClaim("occurrenceSelect", 2),
+              countClaim("occurrenceSelect", 3),
+              countClaim("occurrenceSelect", 5),
+              countClaim("occurrenceSelect", 6),
+              countClaim("occurrenceSelect", 4) +
+                countClaim("occurrenceSelect", 7) +
+                countClaim("occurrenceSelect", 8),
             ]}
             labels={[
               "製品不良",
@@ -283,12 +274,12 @@ const GraphClaim = () => {
         mt={6}
         mx={{ base: 0, lg: 3 }}
         p={6}
-        backgroundColor="white"
-        borderRadius={6}
+        bg="white"
+        rounded={6}
         justifyContent="space-between"
         flexDirection={{ base: "column", lg: "row" }}
       >
-        <Box w={{ base: "100%", lg: "30%" }}>
+        <Box w={{ lg: "30%" }}>
           <TableContainer>
             <Table size="sm">
               <Thead>
@@ -301,7 +292,7 @@ const GraphClaim = () => {
                 {claimSelectList3.map((list, index) => (
                   <Tr key={list.id}>
                     <Td>{list.title}</Td>
-                    <Td>{countClaims("counterplanSelect", index + 1)}</Td>
+                    <Td>{countClaim("counterplanSelect", index + 1)}</Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -310,24 +301,19 @@ const GraphClaim = () => {
                   <Th fontSize="sm" py="2">
                     合計
                   </Th>
-                  <Th fontSize="sm">
-                    {countClaims("counterplanSelect", 1) +
-                      countClaims("counterplanSelect", 2) +
-                      countClaims("counterplanSelect", 3) +
-                      countClaims("counterplanSelect", 4)}
-                  </Th>
+                  <Th fontSize="sm">{countClaimSum("counterplanSelect")}</Th>
                 </Tr>
               </Tfoot>
             </Table>
           </TableContainer>
         </Box>
-        <Box mt={{ base: 6 }} w={{ base: "100%", lg: "65%" }}>
+        <Box mt={{ base: 6 }} w={{ lg: "65%" }}>
           <PieChart
             values={[
-              countClaims("counterplanSelect", 1),
-              countClaims("counterplanSelect", 2),
-              countClaims("counterplanSelect", 3),
-              countClaims("counterplanSelect", 4),
+              countClaim("counterplanSelect", 1),
+              countClaim("counterplanSelect", 2),
+              countClaim("counterplanSelect", 3),
+              countClaim("counterplanSelect", 4),
             ]}
             labels={["修正処置", "書面提出", "改善の機会", "是正処置"]}
           />

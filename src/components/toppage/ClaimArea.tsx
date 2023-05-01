@@ -12,22 +12,20 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { useClaimStore } from "../../../store/useClaimStore";
+import { useUtils } from "@/hooks/useUtils";
 
 const animationKeyframes = keyframes`
-0% { background-color: red; }
+0% { background-color: yellow; }
 50% { background-color: white; }
-100% { background-color: red;  }
+100% { background-color: yellow;  }
 `;
 const animation = `${animationKeyframes} 2s ease-in-out infinite`;
 
 export const ClaimArea = () => {
   const claims = useClaimStore((state) => state.claims);
-  const users = useAuthStore((state) => state.users);
   const currentUser = useAuthStore((state) => state.currentUser);
+  const { isAuth } = useUtils();
   const [claimCount, setClaimCount] = useState(0);
-  const [isoOfficeUsers, setIsoOfficeUsers] = useState<any>([]);
-  const [isoManagerUsers, setIsoManagerUsers] = useState<any>([]);
-  const [isoTopManegmentUsers, setIsoTopManegmentUsers] = useState<any>([]);
 
   useEffect(() => {
     const date = new Date();
@@ -46,7 +44,7 @@ export const ClaimArea = () => {
     );
 
     onSnapshot(q, (snapshot) => {
-      const count = snapshot.docs.map((doc: any) => ({ ...doc.data() }));
+      const count = snapshot.docs.map((doc) => ({ ...doc.data() }));
       setClaimCount(count.length);
     });
   }, []);
@@ -54,19 +52,14 @@ export const ClaimArea = () => {
   //【クレーム】各自クレーム処理件数
   const myClaimCount = () => {
     let sum = 0;
-    claims.forEach((claim: any) => {
+    claims.forEach((claim) => {
       if (
-        claim.operator == currentUser ||
-        (searchUsers(isoOfficeUsers).includes(currentUser) &&
-          claim.status === Number(0)) ||
-        (searchUsers(isoOfficeUsers).includes(currentUser) &&
-          claim.status === Number(2)) ||
-        (searchUsers(isoOfficeUsers).includes(currentUser) &&
-          claim.status === Number(4)) ||
-        (searchUsers(isoManagerUsers).includes(currentUser) &&
-          claim.status === Number(6)) ||
-        (searchUsers(isoTopManegmentUsers).includes(currentUser) &&
-          claim.status === Number(7))
+        claim.operator === currentUser ||
+        (isAuth(["isoOffice"]) && claim.status === 0) ||
+        (isAuth(["isoOffice"]) && claim.status === 2) ||
+        (isAuth(["isoOffice"]) && claim.status === 4) ||
+        (isAuth(["isoManager"]) && claim.status === 6) ||
+        (isAuth(["isoTopManegment"]) && claim.status === 7)
       ) {
         sum++;
       }
@@ -75,45 +68,13 @@ export const ClaimArea = () => {
     return sum;
   };
 
-  //各リストを取得
-  useEffect(() => {
-    //ISO 事務局のリスト(オブジェクト）
-    setIsoOfficeUsers(
-      users.filter((user: any) => {
-        return user.isoOffice === true;
-      })
-    );
-    //ISOマネージャーのリスト(オブジェクト）
-    setIsoManagerUsers(
-      users.filter((user: any) => {
-        return user.isoManager === true;
-      })
-    );
-    //ISO トップマネジメントのリスト(オブジェクト）
-    setIsoTopManegmentUsers(
-      users.filter((user: any) => {
-        return user.isoTopManegment === true;
-      })
-    );
-    //ISO 上司のリスト(オブジェクト）
-  }, [users]);
-
-  //【クレーム】iso（事務局・管理者・TM）のオブジェクトからuidのみ取り出して配列にする
-  const searchUsers = (array: { uid: string | undefined }[]) => {
-    const newUsers = array.map((user: { uid: string | undefined }) => {
-      return user.uid;
-    });
-    return newUsers;
-  };
-
   return (
     <>
       {myClaimCount() && (
-        <Box width="100%" boxShadow="xs" p="6" rounded="md" bg="white">
+        <Box boxShadow="xs" p="6" rounded="md" bg="white">
           <Flex
+            gap={3}
             fontSize="md"
-            mt="1"
-            ml="1"
             flexDirection={{
               base: "column",
               md: "row",
@@ -126,11 +87,11 @@ export const ClaimArea = () => {
               <Box as="span" color="red" fontWeight="bold">
                 {myClaimCount()}
               </Box>
-              件{" 　"}
+              件
             </Box>
             <Box>
               <Link href="/claims">
-                <Text
+                <Box
                   as="span"
                   p={2}
                   fontWeight="bold"
@@ -139,7 +100,7 @@ export const ClaimArea = () => {
                   animation={animation}
                 >
                   クレーム報告書一覧
-                </Text>
+                </Box>
               </Link>
               を check してください。
             </Box>
@@ -147,7 +108,7 @@ export const ClaimArea = () => {
         </Box>
       )}
       <Flex
-        width="100%"
+        w="full"
         p="6"
         alignItems="center"
         justifyContent={{ base: "flex-start", md: "space-between" }}
@@ -163,7 +124,7 @@ export const ClaimArea = () => {
         rounded="md"
         bg="white"
       >
-        <Flex w={{ base: "auto" }} fontSize="lg" alignItems="center">
+        <Flex fontSize="lg" alignItems="center">
           <Text>今月のクレーム報告件数:</Text>
           <Text fontSize="3xl" fontWeight="bold" mx={2} color="red">
             {claimCount}
@@ -171,14 +132,14 @@ export const ClaimArea = () => {
           <Text>件</Text>
         </Flex>
         <Flex flex="1" flexDirection={{ base: "column", sm: "row" }} gap={6}>
-          <Box w={{ base: "100%" }}>
+          <Box w="full">
             <Link href="/claims/">
               <Button colorScheme="blue" variant="outline" w="100%">
                 クレーム報告書一覧
               </Button>
             </Link>
           </Box>
-          <Box w="100%">
+          <Box w="full">
             <Link href="/claims/new">
               <Button colorScheme="blue" w="100%">
                 クレーム報告書を作成

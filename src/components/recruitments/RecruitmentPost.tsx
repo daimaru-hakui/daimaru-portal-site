@@ -1,12 +1,13 @@
 import React, { FC } from "react";
 import { Badge, Box, Divider, Flex, Heading, Text } from "@chakra-ui/react";
 import { Administrator } from "../../../data";
-import { dayOfWeek, starLevel } from "../../../functions";
 import { RecruitmentRegisterButton } from "./RecruitmentRegisterButton";
 import { RecruitmentMemberList } from "./RecruitmentMemberList";
 import { RecruitmentMenu } from "./RecruitmentMenu";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { Request } from "../../../types";
+import { useUtils } from "@/hooks/useUtils";
+import { useDisp } from "@/hooks/useDisp";
 
 type Props = {
   request: Request;
@@ -14,13 +15,8 @@ type Props = {
 
 export const RecruitmentPost: FC<Props> = ({ request }) => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const users = useAuthStore((state) => state.users);
-
-  // 作成者を表示;
-  const getAuthor = (authorId: string) => {
-    const usersfilter = users.find((user) => user.uid === authorId);
-    return usersfilter?.name || "";
-  };
+  const { dayOfWeek, starLevel } = useUtils();
+  const { getUserName } = useDisp();
 
   // newラベルを表示(期限三日)
   const newLabel = (time: any) => {
@@ -32,7 +28,7 @@ export const RecruitmentPost: FC<Props> = ({ request }) => {
   };
 
   return (
-    <Box w="100%" p={3}>
+    <Box p={3}>
       <Flex justifyContent="space-between">
         <Flex flexDirection="column" width="100%">
           {newLabel(request?.sendAt?.toDate()) && (
@@ -79,7 +75,7 @@ export const RecruitmentPost: FC<Props> = ({ request }) => {
           <Flex flexDirection={{ base: "column", md: "row" }} fontSize="sm">
             <Text>【責任者】{request.person}</Text>
             {Administrator.includes(currentUser || "") && (
-              <Text>【作成者】{getAuthor(request.author)}</Text>
+              <Text>【作成者】{getUserName(request.author)}</Text>
             )}
           </Flex>
           <Text py={3} whiteSpace="pre-wrap" fontSize="sm">

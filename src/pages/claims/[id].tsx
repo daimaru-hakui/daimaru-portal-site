@@ -38,7 +38,6 @@ const ClaimId: NextPage = () => {
           <ClaimMessage claim={claim} />
           <ClaimProgress claim={claim} />
           <ClaimEditButton claim={claim} />
-
           <Box
             w={{ md: "750px" }}
             mx="auto"
@@ -48,11 +47,8 @@ const ClaimId: NextPage = () => {
             boxShadow="md"
           >
             <ClaimReport claim={claim} />
-
             <ClaimAccept claim={claim} />
-
             <ClaimConfirmSendButton claim={claim} />
-
             {Number(claim.status) !== 0 && isAuth(["isoOffice"]) && (
               <ClaimSelectSendButton claim={claim} />
             )}
