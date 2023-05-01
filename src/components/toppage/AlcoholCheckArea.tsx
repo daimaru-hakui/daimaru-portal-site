@@ -30,13 +30,12 @@ import React, { FC, useEffect, useState } from "react";
 import { db } from "../../../firebase";
 import { useUtils } from "../../hooks/useUtils";
 import { useAuthStore } from "../../../store/useAuthStore";
-import { AlcoholCheckList } from "../../../types";
 
 export const AlcoholCheckArea: FC = () => {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const [alcoholList, setAlcoholList] = useState<AlcoholCheckList>();
   const [alcoholCheck1, setAlcoholCheck1] = useState("1");
   const [alcoholCheck2, setAlcoholCheck2] = useState("1");
+  const [flag, setFlag] = useState(false);
   const { todayDate } = useUtils();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -70,32 +69,31 @@ export const AlcoholCheckArea: FC = () => {
   useEffect(() => {
     const docRef = doc(db, "alcoholCheckList", `${todayDate()}`);
     onSnapshot(docRef, (querySnapshot) => {
-      setAlcoholList({ ...querySnapshot.data() } as AlcoholCheckList);
+      setFlag(!{ ...querySnapshot.data() }?.member?.includes(currentUser));
     });
   }, []);
 
   return (
     <>
-      {!alcoholList?.member?.includes(currentUser || "") && (
-        <>
-          <Flex
-            alignItems="center"
-            justifyContent="center"
-            p={6}
-            width="100%"
-            rounded="md"
-            bg="white"
-            boxShadow="xs"
-          >
-            <Box textAlign="center" mr={6}>
-              アルコールチェックをしてください
-            </Box>
-            <Button colorScheme="blue" onClick={onOpen}>
-              Click
-            </Button>
-          </Flex>
-        </>
+      {flag && (
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          p={6}
+          width="100%"
+          rounded="md"
+          bg="white"
+          boxShadow="xs"
+        >
+          <Box textAlign="center" mr={6}>
+            アルコールチェックをしてください
+          </Box>
+          <Button colorScheme="blue" onClick={onOpen}>
+            Click
+          </Button>
+        </Flex>
       )}
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
